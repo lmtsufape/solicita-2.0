@@ -96,7 +96,7 @@
         <p class="doc">DECLARAÇÃO DE DEPÓSITO DO TRABALHO <br> ACADÊMICO E NADA CONSTA</p>
     </div>
     <div class="corpo">
-        Declaramos que o(a) Discente <strong>{{$discente}}</strong>, portador(a) do CPF <strong>{{$cpf}}</strong>, regularmente matriculado(a) no curso de <strong>{{$curso}}</strong> da <b>Universidade Federal do Agreste de Pernambuco - UFAPE</b> realizou  o depósito do seu trabalho de conclusão de curso, cujo título é: "<b>{!! $tcc !!}</b>"{{ (($registro_patente ?? 'Não') == 'Sim') ? ', com registro de patente' : ', sem registro de patente' }}, bem como a entrega do Termo de Autorização para o depósito no Repositório Institucional, cumprindo todos os requisitos necessários. <br>
+        Declaramos que o(a) Discente <strong>{{$discente}}</strong>, portador(a) do CPF <strong>{{$cpf}}</strong>, regularmente matriculado(a) no curso de <strong>{{$curso}}</strong> da <b>Universidade Federal do Agreste de Pernambuco - UFAPE</b> realizou  o depósito do seu trabalho de conclusão de curso, cujo título é: "<b>{!! $tcc !!}</b>"{{ (($registro_patente ?? 'false') == 'true') ? ', com registro de patente' : ', sem registro de patente' }}, bem como a entrega do Termo de Autorização para o depósito no Repositório Institucional, cumprindo todos os requisitos necessários. <br>
         <br>
         Portanto, não constando pendências com este setor. <br> <br>
     </div>

@@ -728,10 +728,14 @@ class RequisicaoController extends Controller
 
     public function updateDeposito(Request $request, $deposito_id)
     {
+        $request->merge([
+            'registro_patente' => filter_var($request->registro_patente, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE),
+        ]);
+
         $request->validate([
             'autor_nome' => ['required', 'string', 'max:255'],
             'titulo_tcc' => ['required', 'string'],
-            'registro_patente' => ['nullable','in:Sim,Não']
+            'registro_patente' => ['required', 'boolean'],
         ]);
         $deposito = Deposito::find($deposito_id);
         $deposito->update( $request->all());

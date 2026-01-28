@@ -26,7 +26,7 @@ class CriarDepositoRequest extends FormRequest
         return [
             'autor_nome' => 'required|min:3|max:255',
             'titulo_tcc' => 'required|min:3|max:255',
-            'registro_patente' => 'nullable|in:Sim,Não',
+            'registro_patente' => 'required', 'boolean',
             'anexo_tcc' => 'required|file|mimes:pdf,doc,docx|max:10240',
             'anexo_comprovante_autorizacao' => 'required|file|mimes:pdf,doc,docx|max:10240',
             'anexo_publicacao_parcial' => 'file|mimes:pdf,doc,docx|max:10240',

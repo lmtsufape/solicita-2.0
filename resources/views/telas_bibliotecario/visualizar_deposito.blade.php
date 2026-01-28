@@ -61,8 +61,19 @@
                                     <label class="pt-2 textoFicha" for="exampleFormControlInput1">Título do trabalho<span
                                             style="color: red">*</span>:</label>
                                     <div class="disabled">{!! $requisicao_documento->deposito->titulo_tcc !!}</div>
-                                        <label class="pt-2 textoFicha" for="registro_patente">Registro de patente<span style="color: red">*</span>:</label>
-                                        <input type="text" class="form-control" id="registro_patente" name="registro_patente" value="{{ $deposito->registro_patente ?? '' }}" readonly>
+                                    <div class="form-group pt-2">
+                                        <label for="registro_patente" class="textoFicha">Registro de patente: <span style="color: red">*</span></label>
+                                        <div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="registro_patente" id="registro_patente_sim" value="true" required disabled {{ old('registro_patente', ($deposito->registro_patente ? 'true' : 'false')) == 'true' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="registro_patente_sim">Sim</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="registro_patente" id="registro_patente_nao" value="false" required disabled {{ old('registro_patente', ($deposito->registro_patente ? 'true' : 'false')) == 'false' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="registro_patente_nao">Não</label>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="form-group">
                                         <div class="forma-group">
                                             <label class="pt-2 textoFicha" for="anexoArquivo">Trabalho de Conclusão de Curso (TCC):<span

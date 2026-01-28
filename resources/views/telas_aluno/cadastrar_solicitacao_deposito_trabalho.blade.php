@@ -59,16 +59,22 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="registro_patente">Registro de patente: <span style="color: red">*</span></label>
-                                    <div>
+                                    <div class="@error('registro_patente') is-invalid @enderror">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="registro_patente" id="registro_patente_sim" value="Sim" required {{ old('registro_patente') == 'Sim' ? 'checked' : '' }}>
+                                            <input class="form-check-input" type="radio" name="registro_patente" id="registro_patente_sim" value="true" required {{ old('registro_patente') == 'true' ? 'checked' : '' }}>
                                             <label class="form-check-label" for="registro_patente_sim">Sim</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="registro_patente" id="registro_patente_nao" value="Não" required {{ old('registro_patente') == 'Não' ? 'checked' : '' }}>
+                                            <input class="form-check-input" type="radio" name="registro_patente" id="registro_patente_nao" value="false" required {{ old('registro_patente') == 'false' ? 'checked' : '' }}>
                                             <label class="form-check-label" for="registro_patente_nao">Não</label>
                                         </div>
                                     </div>
+
+                                    @error('registro_patente')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{$message}}</strong>
+                                        </span>
+                                    @enderror
                                 </div>
                                 <div class="form-group">
                                     <label for="anexo1">Trabalho de Conclusão de Curso (TCC): <span

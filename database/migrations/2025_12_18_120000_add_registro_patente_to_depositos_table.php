@@ -14,7 +14,7 @@ class AddRegistroPatenteToDepositosTable extends Migration
     public function up()
     {
         Schema::table('depositos', function (Blueprint $table) {
-            $table->string('registro_patente')->default('Não')->nullable();
+            $table->boolean('registro_patente')->nullable();
         });
     }
 

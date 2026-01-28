@@ -62,15 +62,15 @@
                                             <strong>{{$message}}</strong>
                                         </span>
                                     @enderror
-                                    <div class="form-group">
-                                        <label class="pt-2 textoFicha" for="registro_patente">Registro de patente <span style="color: red">*</span>:</label>
+                                    <div class="form-group pt-2">
+                                        <label for="registro_patente" class="textoFicha">Registro de patente: <span style="color: red">*</span></label>
                                         <div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="registro_patente" id="registro_patente_sim" value="Sim" required {{ (old('registro_patente') ?? $deposito->registro_patente) == 'Sim' ? 'checked' : '' }}>
+                                                <input class="form-check-input" type="radio" name="registro_patente" id="registro_patente_sim" value="true" required {{ old('registro_patente', ($deposito->registro_patente ? 'true' : 'false')) == 'true' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="registro_patente_sim">Sim</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="registro_patente" id="registro_patente_nao" value="Não" required {{ (old('registro_patente') ?? $deposito->registro_patente) == 'Não' ? 'checked' : '' }}>
+                                                <input class="form-check-input" type="radio" name="registro_patente" id="registro_patente_nao" value="false" required {{ old('registro_patente', ($deposito->registro_patente ? 'true' : 'false')) == 'false' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="registro_patente_nao">Não</label>
                                             </div>
                                         </div>
