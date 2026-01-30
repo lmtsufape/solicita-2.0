@@ -70,7 +70,7 @@ class BibliotecarioController extends Controller
         } elseif ($data_fim) {
             $query->where('requisicao_documentos.created_at', '<=', Carbon::parse($data_fim)->endOfDay());
         } else {
-            $query->where('requisicao_documentos.created_at', '>=', Carbon::now()->subDays(5));
+            $query->where('requisicao_documentos.created_at', '>=', Carbon::now()->subMonths(4));
         }
 
         if ($request->search) {
