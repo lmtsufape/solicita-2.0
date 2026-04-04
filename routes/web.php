@@ -133,6 +133,9 @@ Route::middleware('CheckAluno')->group(function(){
     Route::get('/baixar-deposito/{requisicao_documento}', [BibliotecarioController::class, 'baixarDeposito'])->name('baixar-deposito-aluno');
     Route::get('/baixar-retificacao/{retificacao}', [BibliotecarioController::class, 'baixarRetificacao'])->name('baixar-retificacao-aluno');
 
+    Route::get('/verify-new-email/{id}', [PerfilAlunoController::class, 'verifyNewEmail'])
+        ->name('verify.new.email')->middleware(['signed']);
+
     //Processos
     Route::prefix('/processos')->middleware('EmDesenvolvimento')->controller(ProcessoController::class)->group(function(){
         Route::get('/',  'menuProcessos')->name('tratamento.create');
