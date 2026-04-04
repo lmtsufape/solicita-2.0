@@ -95,8 +95,7 @@ Route::group(['middleware'=> ['CheckServidor', 'verified', 'banned']], function(
 //----------------------------------------------ALUNO---------------------------------------------------
 // Route::group(['middleware'=> 'verified'], function(){
 Route::middleware('CheckAluno')->group(function(){
-    Route::get('/home-aluno', [AlunoController::class, 'index'])->name('home-aluno');
-    Route::get('/home-aluno',[AlunoController::class, 'homeAluno'])->name('home-aluno');
+    Route::get('/home-aluno',[AlunoController::class, 'homeAluno'])->name('home-aluno')->middleware(['auth', 'verified']);
     Route::get('/listar-requisicoes-aluno',[AlunoController::class, 'listarRequisicoes'])->name('listar-requisicoes-aluno');
     Route::post('/confirmacao-requisicao', [RequisicaoController::class, 'novaRequisicao'])->name('confirmacao-requisicao'); //------------
     Route::post('/finaliza-requisicao', [RequisicaoController::class, 'finalizaRequisicao'])->name('finaliza-requisicao');
