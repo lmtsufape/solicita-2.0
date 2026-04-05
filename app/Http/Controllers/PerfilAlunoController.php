@@ -42,6 +42,17 @@ class PerfilAlunoController extends Controller
     public function storeEditarInfo(Request $request){
       //atualização dos dados
       $user = Auth::user();
+      $aluno = Aluno::where('user_id', $user->id)->first();
+
+      $request->merge([
+          'cpf' => preg_replace('/[^0-9]/', '', $request->cpf ?? ''),
+      ]);
+
+      $request->validate([
+        'name' => ['required', 'string', 'min:10', 'max:255'],
+        'cpf'  => ['bail', 'required', 'digits:11', 'cpf', 'unique:alunos,cpf,' . $aluno->id],
+      ]);
+
       if($user->email != $request->email){
         $request->validate([
           'email' => ['bail','required', 'string', 'email', 'max:255', 'unique:users'],
@@ -54,8 +65,12 @@ class PerfilAlunoController extends Controller
           $user->notify(new \App\Notifications\VerifyNewEmail);
           return redirect()->route('verification.notice');
       }
+
       $user->name = $request->name;
       $user->email = $request->email;
+
+      $aluno->cpf = $request->cpf;
+      $aluno->save();
       $user->save();
 
       //dados para ser exibido na view
@@ -248,6 +263,12 @@ public function definirPerfilDefault(Request $request){
     $id = $request->idPerfil;
     $selecao = Perfil::where('id', $id)->first(); //perfil que será selecionado como padrão
     // dd($selecao);
+
+    // Verifica se já é o padrão
+    if($selecao->valor == true){
+        return redirect()->back()->with('success', 'Este perfil já é o padrão.');
+    }
+
     $usuario = User::find(Auth::user()->id);
 
     $aluno = $usuario->aluno;
