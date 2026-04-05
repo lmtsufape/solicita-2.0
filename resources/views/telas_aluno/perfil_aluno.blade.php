@@ -33,7 +33,7 @@
             <div class="row justify-content-between mt-2">
                 <div class="col-md-6">
                     <label for="nome" class="textoFicha mb-1">CPF:</label>
-                    <div class="mt-0 pt-0"
+                    <div id="cpf" class="mt-0 pt-0"
                          style="color: var(--textcolor); font-weight: 500; font-size: 18px">{{$aluno->cpf}}</div>
                 </div>
                 <div class="col-md-6">
@@ -75,12 +75,16 @@
                             Perfis
                         </div>
                         <div class="col-md-6 text-right">
+                            <a href="#" class="btn p-0" onclick="event.preventDefault(); definirPadrao()" title="Definir como padrão">
+                                <img src="images/home-default.svg" height="35px">
+                            </a>
                             <a href="{{route('adiciona-perfil')}}" class="btn p-0">
                                 <img src="images/botao_add.svg"  style="border: white 3px solid; border-radius: 0.5rem" height="35px"
                                      title="Adicionar Perfil"></a>
                             <a href="{{route('excluir-perfil')}}" class="btn p-0">
                                 <img src="images/botao_remover.svg" height="35px"
                                      title="Excluir Perfil"></a>
+
                         </div>
                     </div>
                 </div>
@@ -112,8 +116,12 @@
                 </span>
                         @endif
                         <br>
-                        @endforeach
+                @endforeach
                     </form>
+                <form method="POST" id="formDefinirPadrao" action="{{ route('perfil-padrao') }}">
+                    @csrf
+                    <input type="hidden" name="idPerfil" id="idPerfilPadrao">
+                </form>
             </div>
             <div>
                 @foreach($perfisAluno as $pa)
@@ -150,6 +158,17 @@
 </div>
 
 <script>
+
+function definirPadrao(){
+    var selecionado = document.querySelector('input[name="idPerfil"]:checked');
+    if(!selecionado){
+        alert('Selecione um perfil primeiro.');
+        return;
+    }
+    document.getElementById('idPerfilPadrao').value = selecionado.value;
+    document.getElementById('formDefinirPadrao').submit();
+}
+
 function excluirPerfil(){
   confirma = confirm("Você tem certeza que deseja excluir este perfil?");
   if(confirma){
@@ -168,4 +187,12 @@ function perfilId(id){
   document.getElementById('id_documento').value = id;
 }
 </script>
+
+<script>
+    var cpf = document.getElementById('cpf').innerText;
+    document.getElementById('cpf').innerText = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+</script>
+
+
+
 @endsection
