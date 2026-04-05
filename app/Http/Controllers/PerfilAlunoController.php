@@ -199,7 +199,7 @@ public function excluirPerfil(Request $request) {
 
       $quant = count($perfis);
       if($quant===1){
-        return redirect()->back()->with('error', 'Necessário haver ao menos um perfil vinculado ao aluno!');
+        return redirect()->back()->with('fail', 'Necessário haver ao menos um perfil vinculado ao aluno!');
       }
       else{
         // Requisições do perfil selecionado para deletar

@@ -81,9 +81,10 @@
                             <a href="{{route('adiciona-perfil')}}" class="btn p-0">
                                 <img src="images/botao_add.svg"  style="border: white 3px solid; border-radius: 0.5rem" height="35px"
                                      title="Adicionar Perfil"></a>
-                            <a href="{{route('excluir-perfil')}}" class="btn p-0">
+                            <a href="#" class="btn p-0" onclick="event.preventDefault(); excluirPerfil()">
                                 <img src="images/botao_remover.svg" height="35px"
-                                     title="Excluir Perfil"></a>
+                                     title="Excluir Perfil">
+                            </a>
 
                         </div>
                     </div>
@@ -170,13 +171,15 @@ function definirPadrao(){
 }
 
 function excluirPerfil(){
-  confirma = confirm("Você tem certeza que deseja excluir este perfil?");
-  if(confirma){
-    event.preventDefault();
-    document.getElementById('formExcluirPerfil').submit();
-  }else{
-    event.preventDefault();
-  }
+    var selecionado = document.querySelector('input[name="idPerfil"]:checked');
+    if(!selecionado){
+        alert('Selecione um perfil primeiro.');
+        return;
+    }
+    var confirma = confirm("Você tem certeza que deseja excluir este perfil?");
+    if(confirma){
+        selecionado.closest('form').submit();
+    }
 }
 function confirma(){
     document.getElementById("formModal").submit();
