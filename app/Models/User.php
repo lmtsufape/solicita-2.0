@@ -88,4 +88,12 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         return $this->hasMany(Processo::class);
     }
 
+     public function routeNotificationForMail($notification)
+     {
+        if($this->pending_email){
+            return $this->pending_email;
+        }
+        return $this->email;
+     }
+
 }

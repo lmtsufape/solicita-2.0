@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Notifications\VerifyNewEmail;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -61,8 +62,11 @@ class PerfilAlunoController extends Controller
         //para verificar email ao mudar
           $user->pending_email = $request->email; // salva como pendente
           $user->name = $request->name;
+          $user->email_verified_at = null;
+          $aluno->cpf = $request->cpf;
+          $aluno->save();
           $user->save();
-          $user->notify(new \App\Notifications\VerifyNewEmail);
+          $user->notify(new VerifyNewEmail);
           return redirect()->route('verification.notice');
       }
 
