@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Notifications\VerifyNewEmail;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -42,14 +43,41 @@ class PerfilAlunoController extends Controller
     public function storeEditarInfo(Request $request){
       //atualização dos dados
       $user = Auth::user();
-      if($user->email!=$request->email){
+      $aluno = Aluno::where('user_id', $user->id)->first();
+
+      $request->merge([
+          'cpf' => preg_replace('/[^0-9]/', '', $request->cpf ?? ''),
+      ]);
+
+      $request->validate([
+        'name' => ['required', 'string', 'min:10', 'max:255'],
+        'cpf'  => ['bail', 'required', 'digits:11', 'cpf', 'unique:alunos,cpf,' . $aluno->id],
+      ]);
+
+      if($user->email != $request->email){
         $request->validate([
           'email' => ['bail','required', 'string', 'email', 'max:255', 'unique:users'],
         ]);
+
+          $user->name = $request->name;
+          $aluno->cpf = $request->cpf;
+
+          //para verificar email ao mudar
+          $user->pending_email = $request->email; // salva como pendente
+//          $user->email_verified_at = null; so caso a mudanca de email deva bloquear o uso do sistema
+          $aluno->save();
+          $user->save();
+          $user->notify(new VerifyNewEmail);
+          return redirect()->route('pending.email.notice');
       }
+
       $user->name = $request->name;
       $user->email = $request->email;
+
+      $aluno->cpf = $request->cpf;
+      $aluno->save();
       $user->save();
+
       //dados para ser exibido na view
       $cursos = Curso::all();
       $unidades = Unidade::all();
@@ -176,7 +204,7 @@ public function excluirPerfil(Request $request) {
 
       $quant = count($perfis);
       if($quant===1){
-        return redirect()->back()->with('error', 'Necessário haver ao menos um perfil vinculado ao aluno!');
+        return redirect()->back()->with('fail', 'Necessário haver ao menos um perfil vinculado ao aluno!');
       }
       else{
         // Requisições do perfil selecionado para deletar
@@ -240,6 +268,12 @@ public function definirPerfilDefault(Request $request){
     $id = $request->idPerfil;
     $selecao = Perfil::where('id', $id)->first(); //perfil que será selecionado como padrão
     // dd($selecao);
+
+    // Verifica se já é o padrão
+    if($selecao->valor == true){
+        return redirect()->back()->with('success', 'Este perfil já é o padrão.');
+    }
+
     $usuario = User::find(Auth::user()->id);
 
     $aluno = $usuario->aluno;

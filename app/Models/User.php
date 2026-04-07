@@ -28,7 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'tipo',
+        'name', 'email', 'password', 'tipo','pending_email',
     ];
 
     /**
@@ -87,5 +87,13 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     public function processos(){
         return $this->hasMany(Processo::class);
     }
+
+     public function routeNotificationForMail($notification)
+     {
+        if($this->pending_email){
+            return $this->pending_email;
+        }
+        return $this->email;
+     }
 
 }

@@ -20,7 +20,7 @@
                                             <input id="name" type="name"
                                                    class="form-control @error('password-old') is-invalid @enderror"
                                                    name="name" required autocomplete="current-password"
-                                                   placeholder="Digite seu nome completo." value="{{ $user->name }}">
+                                                   placeholder="Digite seu nome completo." value="{{ old('name', $user->name) }}">
                                         </label>
                                         @error('password-old')
                                         <span class="invalid-feedback" role="alert"
@@ -37,7 +37,7 @@
                                         <label for="email" class="row px-3 textoFicha">Email:
                                             <input id="email" type="email"
                                                    class="form-control @error('email') is-invalid @enderror"
-                                                   name="email" value="{{ $user->email }}" required autocomplete="email"
+                                                   name="email" value="{{ old('email', $user->email) }}" required autocomplete="email"
                                                    autofocus placeholder="Digite seu E-Mail.">
                                         </label>
                                         @error('password-old')
@@ -45,6 +45,22 @@
                                               style="overflow: visible; display:block;">
                                   <strong>{{ $message }}</strong>
                                   </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="form-group row justify-content-center mt-3">
+                                    <div class="col-md-12">
+                                        <label for="cpf" class="row px-3 textoFicha">CPF:
+                                            <input id="cpf" type="text"
+                                                   class="form-control @error('cpf') is-invalid @enderror"
+                                                   name="cpf" required
+                                                   placeholder="Digite seu CPF." value="{{ old('cpf', $aluno->cpf) }}">
+                                        </label>
+                                        @error('cpf')
+                                            <span class="invalid-feedback" role="alert" style="overflow: visible; display:block;">
+                                            <strong>{{ $message }}</strong>
+                                            </span>
                                         @enderror
                                     </div>
                                 </div>
@@ -70,6 +86,11 @@
         </div>
     </div>
 
+    <script type="text/javascript">
+        $(document).ready(function($){
+            $('#cpf').mask('000.000.000-00');
+        });
+    </script>
 
 
 @endsection

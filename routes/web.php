@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\ProcessoController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -134,6 +135,11 @@ Route::middleware('CheckAluno')->group(function(){
     Route::get('/baixar-deposito/{requisicao_documento}', [BibliotecarioController::class, 'baixarDeposito'])->name('baixar-deposito-aluno');
     Route::get('/baixar-retificacao/{retificacao}', [BibliotecarioController::class, 'baixarRetificacao'])->name('baixar-retificacao-aluno');
 
+
+    Route::get('/pending-email-notice', function(){
+        return view('autenticacao.pending-email-notice');
+    })->name('pending.email.notice')->middleware('auth');
+
     //Processos
     Route::prefix('/processos')->middleware('EmDesenvolvimento')->controller(ProcessoController::class)->group(function(){
         Route::get('/',  'menuProcessos')->name('tratamento.create');
@@ -151,6 +157,9 @@ Route::middleware('CheckAluno')->group(function(){
 //----------------------------------------------BIBLIOTECARIO---------------------------------------------------
 // Route::group(['middleware'=> 'verified'], function(){
 Route::group(['middleware'=> ['CheckBibliotecario', 'banned']], function(){
+    Route::get('/pending-email-notice-bibliotecario', function(){
+        return view('autenticacao.pending-email-notice');
+    })->name('pending.email.notice.bibliotecario');
     Route::get('/home-bibliotecario', [BibliotecarioController::class, 'index'])->name('home-bibliotecario')->middleware('CheckBibliotecario');
     Route::get('/perfil-bibliotecario',[BibliotecarioController::class, 'perfil'])->name('perfil-bibliotecario')->middleware('CheckBibliotecario');
     Route::get('/editar-bibliotecario',[BibliotecarioController::class, 'editarBibliotecario'])->name('editar-bibliotecario')->middleware('CheckBibliotecario');
@@ -167,6 +176,7 @@ Route::group(['middleware'=> ['CheckBibliotecario', 'banned']], function(){
     Route::get('/editar-ficha/{requisicao_id}/gerar-ficha',[BibliotecarioController::class, 'gerarFicha'])->name('gerar-ficha');
     Route::get('/editar-ficha/{requisicao_id}/baixarAnexo',[BibliotecarioController::class, 'baixarAnexo'])->name('baixar-anexo');
     Route::post('/preview/{requisicao_id}', [BibliotecarioController::class, 'previewFicha'])->name('preview');
+
 
     Route::post('/atualizar-nome-nada-consta/{nadaConstaId}',[\App\Http\Controllers\RequisicaoController::class, 'EditarNomeAutorNadaConsta'])->name('atualizar-nome-nada-consta');
     Route::get('/avaliar-nada-consta/{requisicao_id}',[\App\Http\Controllers\BibliotecarioController::class, 'avaliarNadaConsta'])->name('avaliar-nada-consta')->middleware('CheckBibliotecario');
@@ -205,4 +215,8 @@ Route::get('/home', [\App\Http\Controllers\HomeController::class, 'index'])->nam
 // Route::get('/cancela-requisicao', [\App\Http\Controllers\AlunoController::class, 'cancelaRequisicao')->name('cancela-requisicao');
 // Route::get('/prepara-requisicao', [\App\Http\Controllers\AlunoController::class, 'preparaNovaRequisicao')->name('prepara-requisicao');
 // Route::post('/excluir-perfil',[\App\Http\Controllers\PerfilAlunoController::class, 'excluirPerfil')->name('excluir-perfil');
+
+Route::get('/verify-new-email/{id}', [VerificationController::class, 'verifyNewEmail'])
+    ->name('verify.new.email')
+    ->middleware(['signed']);
 

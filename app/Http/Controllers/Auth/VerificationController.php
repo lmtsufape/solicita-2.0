@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Foundation\Auth\VerifiesEmails;
+use Illuminate\Http\Request;
 
 class VerificationController extends Controller
 {
@@ -60,5 +62,21 @@ class VerificationController extends Controller
     //     return redirect($this->redirectPath())->with('verified', true);
     // }
 
+    public function verifyNewEmail(Request $request){
+        $user = User::find($request->id);
 
+        if(!$user || !$user->pending_email){
+            return redirect()->route('login')->with('fail', 'Link inválido ou expirado.');
+        }
+        $user->email = $user->pending_email;
+        $user->pending_email = null;
+        $user->email_verified_at = now();
+        $user->save();
+
+        if($user->tipo == 'bibliotecario'){
+            return redirect()->route('perfil-bibliotecario')->with('success', 'E-mail atualizado com sucesso!');
+        }
+
+        return redirect()->route('perfil-aluno')->with('success', 'E-mail atualizado com sucesso!');
+    }
 }
