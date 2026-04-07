@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Biblioteca;
 use App\Models\Bibliotecario;
 use App\Models\Servidor;
+use App\Notifications\ContaDesativada;
+use App\Notifications\ContaReativada;
 use Illuminate\Http\Request;
 
 use App\Models\Curso;
@@ -122,11 +124,20 @@ class UsuarioController extends Controller
             case "aluno":
                 break;
                 case "bibliotecario":
-                    if ($request->has('active')) {
-                    $usuario->active = 1;
-                } else {
-                    $usuario->active = 0;
-                }
+                    //notifica desativaçao da conta, se antes dessa request estava ativa
+                    $ativoAntes = $usuario->active;
+                    $novoStatus = $request->has('active') ? 1 : 0;
+
+                    $usuario->active = $novoStatus;
+
+                    //desativar
+                    if ($ativoAntes == 1 && $novoStatus == 0) {
+                        $usuario->notify(new ContaDesativada());
+                    }
+                    //ativar
+                    else if ($ativoAntes == 0 && $novoStatus == 1) {
+                        $usuario->notify(new ContaReativada());
+                    }
                 $usuario->bibliotecario->crb = $request->crb;
                 $usuario->bibliotecario->update();
 
@@ -134,10 +145,18 @@ class UsuarioController extends Controller
 
                 break;
             case "servidor":
-                if ($request->has('active')) {
-                    $usuario->active = 1;
-                } else {
-                    $usuario->active = 0;
+                $ativoAntes = $usuario->active;
+                $novoStatus = $request->has('active') ? 1 : 0;
+
+                $usuario->active = $novoStatus;
+
+                //desativar
+                if ($ativoAntes == 1 && $novoStatus == 0) {
+                    $usuario->notify(new ContaDesativada());
+                }
+                //ativar
+                else if ($ativoAntes == 0 && $novoStatus == 1) {
+                    $usuario->notify(new ContaReativada());
                 }
                 $usuario->update();
 
