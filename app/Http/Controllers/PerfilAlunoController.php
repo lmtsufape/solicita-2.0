@@ -59,15 +59,16 @@ class PerfilAlunoController extends Controller
           'email' => ['bail','required', 'string', 'email', 'max:255', 'unique:users'],
         ]);
 
-        //para verificar email ao mudar
-          $user->pending_email = $request->email; // salva como pendente
           $user->name = $request->name;
-          $user->email_verified_at = null;
           $aluno->cpf = $request->cpf;
+
+          //para verificar email ao mudar
+          $user->pending_email = $request->email; // salva como pendente
+//          $user->email_verified_at = null; so caso a mudanca de email deva bloquear o uso do sistema
           $aluno->save();
           $user->save();
           $user->notify(new VerifyNewEmail);
-          return redirect()->route('verification.notice');
+          return redirect()->route('pending.email.notice');
       }
 
       $user->name = $request->name;
@@ -290,20 +291,4 @@ public function definirPerfilDefault(Request $request){
     }
     return redirect()->back()->with('success', 'Definido com sucesso!');
   }
-
-  //Metodo para verificar novo email ao mudar na edição de perfil
-    public function verifyNewEmail(Request $request){
-        $user = User::find($request->id);
-
-        if(!$user || !$user->pending_email){
-            return redirect()->route('perfil-aluno')->with('error', 'Link inválido ou expirado.');
-        }
-
-        $user->email = $user->pending_email;
-        $user->pending_email = null;
-        $user->email_verified_at = now();
-        $user->save();
-
-        return redirect()->route('perfil-aluno')->with('success', 'E-mail atualizado com sucesso!');
-    }
 }

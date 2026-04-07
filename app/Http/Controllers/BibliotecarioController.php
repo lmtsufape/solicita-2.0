@@ -20,6 +20,7 @@ use App\Models\Tese;
 use App\Models\TipoDocumento;
 use App\Models\Unidade;
 use App\Models\User;
+use App\Notifications\VerifyNewEmail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -821,26 +822,36 @@ class BibliotecarioController extends Controller
 
     public function atualizarBibliotecario(Request $request)
     {
-        //atualização dos dados
-
         $user = Auth::user();
         $bibliotecario = Bibliotecario::where('user_id', $user->id)->first();
-        if ($user->email != $request->email) {
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        if($user->email != $request->email){
+
             $request->validate([
                 'email' => ['bail', 'required', 'string', 'email', 'max:255', 'unique:users'],
             ]);
+
+            $user->name = $request->name;
+            $user->pending_email = $request->email;
+//            $user->email_verified_at = null; apenas caso deva bloquear o uso do sistema
+            $bibliotecario->crb = $request->crb;
+            $user->save();
+            $bibliotecario->save();
+            $user->notify(new VerifyNewEmail);
+            return redirect()->route('pending.email.notice.bibliotecario');
         }
+
         $user->name = $request->name;
         $user->email = $request->email;
         $bibliotecario->crb = $request->crb;
-
         $user->save();
         $bibliotecario->save();
 
-        //dados para ser exibido na view
-        $idUser = Auth::user()->id;
-        $user = User::find($idUser); //Usuário Autenticado
-        return redirect()->route('home-bibliotecario')
+        return redirect()->route('perfil-bibliotecario')
             ->with('success', 'Seus dados foram atualizados!');
     }
 
