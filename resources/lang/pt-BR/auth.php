@@ -10,6 +10,6 @@ return [
     | these language lines according to your application's requirements.
     |
     */
-    'failed' => 'As informações de login não foram encontradas.',
+    'failed' => 'E-mail ou senha incorretos.',
     'throttle' => 'Muitas tentativas de login. Por favor tente novamente em :seconds segundos.',
 ];
