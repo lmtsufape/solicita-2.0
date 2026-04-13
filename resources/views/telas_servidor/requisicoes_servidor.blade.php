@@ -33,21 +33,7 @@
                     <thead class="lmts-primary table-borderless" style="border-color:#1B2E4F;">
                     <tr>
                         <!-- Checkbox para selecionar todos os documentos -->
-                        <th scope="row">
-                            <!-- botão de finalizar -->
-                            <form id="formularioRequisicao" action="{{  route('listar-requisicoes-post')  }}"
-                                  method="POST">
-                            @csrf
-                            <!-- Checkbox que seleciona todos os outros -->
-                                <div class="form-check">
-                                    @if(isset($listaRequisicao_documentos))
-                                        @if(sizeof($listaRequisicao_documentos) > 0)
-                                            <input class="checkboxLinha" type="checkbox" id="selectAll" value="">
-                                        @endif
-                                    @endif
 
-                                </div>
-                        </th>
                         <th scope="col" class="titleColumn" onclick="sortTable(0)" style="cursor:pointer">#</th>
                         <th scope="col" class="titleColumn text-center">CPF</th>
                         <th scope="col" class="titleColumn" onclick="sortTable(2)" style="cursor:pointer">Nome
@@ -63,24 +49,24 @@
                         @if($titulo=="Concluídos" || $titulo == "Indeferidos" )
                             <th scope="col">Documento Solicitado</th>
                             <th scope="col">Status</th>
-                        @else
-                            <th scope="col" class="text-center">Ação</th>
-                    @endif
-                    <!-- <th scope="col" class="titleColumn" >STATUS</th> -->
+                    @endif <th scope="row" style="width:40px; text-align:center; vertical-align:middle;">
+                            <!-- botão de finalizar -->
+                            <form id="formularioRequisicao" action="{{  route('listar-requisicoes-post')  }}"
+                                  method="POST">
+                                @csrf
+                                <!-- Checkbox que seleciona todos os outros -->
+                                    @if(isset($listaRequisicao_documentos))
+                                        @if(sizeof($listaRequisicao_documentos) > 0)
+                                            <input type="checkbox" id="selectAll">
+                                        @endif
+                                    @endif
 
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
                     @foreach($listaRequisicao_documentos as $requisicao_documento)
                         <tr>
-                            <th scope="row" style="width:10px">
-                                <div class="form-check">
-                                    <!-- checkboxLinha[] pega o valor de todos os checkboxLinha e envia como post para a rota -->
-                                    <input class="checkboxLinha" type="checkbox" id="checkboxLinha"
-                                           name="checkboxLinha[]"
-                                           value="{{$requisicao_documento['id']}}" onclick="">
-                                </div>
-                            </th>
                             <td class="align-middle">{{$loop->iteration}}</td>
                             <td class="text-center align-middle">{{$requisicao_documento['cpf']}}</td>
                             <td class="align-middle">{{$requisicao_documento['nome']}}</td>
@@ -201,30 +187,13 @@
                                         Requisição: {{$requisicao_documento['status']}}
                                     </td>
                                 @endif
-
-                            @else
-                                <td class="td-align">
-                                    <a href="" id="botao" data-toggle="modal" data-target="#myModal" aria-hidden="true"
-                                       onclick="event.preventDefault();mudarId({{$requisicao_documento['id']}});"
-                                       data-whatever="{{$requisicao_documento['nome']}}"
-                                       data-curso="{{$requisicao_documento['curso']}}"
-                                       data-anotacoes="{{$requisicao_documento['detalhes']}}">
-
-                                        <img src="images/botao_remover.svg" height="30px"
-                                             title="Indeferir Solicitação">
-
-                                        <span class="glyphicon glyphicon-remove-circle"
-                                              style="overflow: hidden; color:red"
-                                              title="Indeferir pedido." onclick="event.preventDefault()"
-                                              data-toggle="tooltip; modal" data-placement="top"
-                                              data-id="{{$requisicao_documento['id']}}"
-                                              data-nome="{{$requisicao_documento['nome']}}"
-                                              data-title="{{$requisicao_documento['curso']}}">
-                      </span>
-                                    </a>
-                                </td>
                             @endif
                             {{-- DOCUMENTOS SOLICITADOS E STATUS - FIM --}}
+                            <td style="width:40px; text-align:center; vertical-align:middle;">
+                                <input class="checkboxLinha" type="checkbox"
+                                       name="checkboxLinha[]"
+                                       value="{{$requisicao_documento['id']}}">
+                            </td>
 
                         </tr>
                     @endforeach
@@ -233,63 +202,77 @@
                     </tbody>
                     </form>
                 </table>
-                <table>
-                    <tr class="">
-                        @if(isset($listaRequisicao_documentos))
-                            @if(sizeof($listaRequisicao_documentos) > 0 && $titulo != "Concluídos" && $titulo != "Indeferidos")
-                                <button id="btnFinalizar" onclick="event.preventDefault();confirmarRequisicao()"
-                                        class="btn"
-                                        style="background-color: var(--confirmar); border-radius: 0.5rem; color: white; font-size: 17px">
-                                    {{$listaRequisicao_documentos[0]['requisicoes_documentos']->documento_id === 6 ? 'DESBLOQUEADO' : 'Concluir'}}
-                                </button>
-                            @endif
-                        @endif
-                    </tr>
-                </table>
+                <div class="d-flex gap-2 mt-3">
+
+                    <button id="btnAprovar"
+                            onclick="event.preventDefault(); confirmarRequisicao()"
+                            class="btn"
+                            style="background-color: green; color: white; border-radius: 0.5rem;">
+                        Aprovar
+                    </button>
+
+                    <button id="btnIndeferir"
+                            onclick="event.preventDefault(); abrirModalIndeferir()"
+                            class="btn"
+                            style="background-color: red; color: white; border-radius: 0.5rem;">
+                        Indeferir
+                    </button>
+
+                </div>
+
+
+
+
+
 
             </div>
         </div>
     </div>
 
-    @foreach($listaRequisicao_documentos as $requisicao_documento)
-        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-             aria-hidden="true">
-            <form method="post" id="formModal" action="{{ route("indefere-requisicoes-post")}}">
-                <input type="hidden" name="idDocumento" value="" id="id_documento">
-                @csrf
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <div class="col">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                                <h5 class="modal-title" id="myModalLabel">Justificativa: {{$requisicao_documento['id']}}</h5>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
 
-                                {{-- <h5 class="modal-title myModalLabelPerfil" id="myModalLabelPerfil"></h5>
-                                <h5 class="modal-title myModalLabelAnotacao" id="myModalLabelAnotacao"></h5>  --}}
-                            </div>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="message-text" class="col-form-label">Mensagem:</label>
-                                <textarea class="form-control" id="anotacoes" name="anotacoes" required></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <a type="button" class="btn btn-secondary" data-dismiss="modal" style="margin-right:10px">
-                                {{ ('Fechar') }}
-                            </a>
-                            <a type="button" class="btn btn-primary btn-primary-lmts" onclick="event.preventDefault(); indeferirRequisicao()"
-                               href="{{ route("indefere-requisicoes-post")}}" style="margin-right:10px">
-                                {{ ('Enviar') }}
-                            </a>
-                        </div>
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <form method="POST" id="formModal" action="{{ route('indefere-requisicoes-post') }}">
+                    @csrf
+
+                    <div id="container-ids"></div>
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Justificativa do Indeferimento</h5>
+
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
                     </div>
-                </div>
+
+                    <div class="modal-body">
+                        <textarea name="anotacoes" class="form-control" required></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Fechar
+                        </button>
+
+                        <button type="submit" class="btn btn-danger">
+                            Indeferir Selecionados
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
         </div>
-        </form>
-    @endforeach
+
+    </div>
+
+    </div>
     <!-- Modal -->
 
     <script>
@@ -329,8 +312,9 @@
     </script>
 
     <script>
-        function mudarId(id){
+        function mudarId(id) {
             document.getElementById('id_documento').value = id;
+            $('#myModal').modal('show');
         }
         function selectClicado(){
             var selectedValue = document.getElementById("cursos").value;
@@ -356,16 +340,8 @@
             var id = button.data('id')
             var curso = button.data('curso')
             var anotacoes = button.data('anotacoes')
-            // var recipient = .data('whatever')
-            // Extrai informação dos atributos data-*
-            // Se necessário, você pode iniciar uma requisição AJAX aqui e, então, fazer a atualização em um callback.
-            // Atualiza o conteúdo do modal. Nós vamos usar jQuery, aqui. No entanto, você poderia usar uma biblioteca de data binding ou outros métodos.
             var modal = $(this)
             modal.find('.modal-title').text('Nome do Aluno: ' + recipient)
-            //Exibir o curso e anotações no modal
-            // modal.find('.myModalLabelPerfil ').text('Curso: ' + curso)
-            // modal.find('.myModalLabelAnotacao').text("Anotação: " + anotacoes)
-
             modal.find('.modal-body input').val(recipient)
         })
 
@@ -395,36 +371,81 @@
 
         //console.log(checkBoxs);
 
-        function confirmarRequisicao(){
-            var ids = getLinhas();
-            // retorna o newArray contendo todos os ids dos checkboxs selecionados
-            // verifica se o usuário selecionou pelo menos um checkbox
-            if(ids.length != 0){
-                if(confirm("Você deseja marcar o(s) documento(s) como concluído(s)?")== true){
-                    for(let i = 0; i < ids.length; i++){
-                        $('#formularioRequisicao').append(
-                            $('<input>')
-                                .attr('type', 'hidden')
-                                .attr('name', 'checkboxLinha[]')
-                                .val(ids[i])
-                        );
-                    }
-                   document.getElementById("formularioRequisicao").submit();
-                }
-            }else {
+        function confirmarRequisicao() {
+            const ids = getLinhas();
+
+            if (ids.length === 0) {
                 alert("Selecione pelo menos um documento!");
+                return;
             }
+
+            if (!confirm("Confirma aprovação dos documentos selecionados?")) {
+                return;
+            }
+
+            const form = document.getElementById("formularioRequisicao");
+
+            // limpa inputs antigos
+            form.querySelectorAll('input[name="checkboxLinha[]"]').forEach(el => el.remove());
+
+            // adiciona novos
+            ids.forEach(id => {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "checkboxLinha[]";
+                input.value = id;
+                form.appendChild(input);
+            });
+
+            form.submit();
+        }
+
+        function abrirModalIndeferir() {
+            const ids = getLinhas();
+
+            if (ids.length === 0) {
+                alert("Selecione pelo menos um documento!");
+                return;
+            }
+
+            const container = document.getElementById("container-ids");
+            container.innerHTML = "";
+
+            ids.forEach(id => {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "checkboxLinha[]";
+                input.value = id;
+                container.appendChild(input);
+            });
+
+            document.querySelector('[name="anotacoes"]').value = "";
+
+            $('#myModal').modal('show');
         }
 
         function indeferirRequisicao(){
+            const anotacoes = document.getElementById('anotacoes').value.trim();
+
+            if (anotacoes === '') {
+                alert('A mensagem é obrigatória');
+                return;
+            }
+
             if(confirm("Confirma o indeferimento desta requisição?")== true){
                 console.log("indeferir requisição")
                 document.getElementById("formModal").submit();
             }
         }
-        function getLinhas(){
-            var ids = document.getElementsByClassName("checkboxLinha");// pega o id de todos os checkboxs marcados
-            return getIds(ids);
+        function getLinhas() {
+            const checkboxes = document.querySelectorAll('.checkboxLinha:checked');
+            const ids = [];
+
+            checkboxes.forEach(cb => {
+                ids.push(cb.value);
+            });
+
+            return ids;
         }
         function getIds(dados){
             var arrayDados = dados;
@@ -534,4 +555,5 @@
     </script>
 
 @endsection
+
 
