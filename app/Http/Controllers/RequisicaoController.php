@@ -499,78 +499,100 @@ class RequisicaoController extends Controller
         $perfis = Perfil::where('aluno_id', $aluno->id)->get();
         return view('telas_servidor.requisicoes_aluno_servidor', compact('requisicoes', 'aluno', 'perfis'));
     }
-
+/*
+ * Indefere REQUISICAO(OES)
+ * */
     public function indeferirRequisicao(Request $request)
     {
         $request->validate([
             'anotacoes' => ['required'],
+            'checkboxLinha' => ['required', 'array']
         ]);
-        $id = $request->idDocumento;
+
+        $ids = $request->checkboxLinha;
+
         $servidorLogado = Auth::user();
         $servidor = Servidor::where('user_id', $servidorLogado->id)->first();
-        $id_documento = Requisicao_documento::where('id', $id)->first();
-        $id_documento->anotacoes = $request->anotacoes;
-        $id_documento->status = "Indeferido";
-        $id_documento->servidor_id = $servidor->id;
-        $aluno = Aluno::where('id', $id_documento->aluno_id)->first();
-        $user = User::where('id', $aluno->user_id)->first();
-        $documento = Documento::where('id', $id_documento->documento_id)->first();
-        $to_email = $user->email;
-        $nome_documento = $documento->tipo;
-        $data = array(
-            'usuario' => $user,
-            'aluno' => $aluno,
-            'servidor' => $servidor,
-            'documento' => $id_documento,
-            'nome_documento' => $nome_documento,
-            'anotacoes' => $id_documento->anotacoes,
-        );
-        $id_documento->save();
-        $subject = 'Solicita - Status da Requisicao: ' . $id_documento->status;
 
+        $requisicoes = Requisicao_documento::whereIn('id', $ids)->get();
 
-        $details = ['data' => $data, 'cabecalho' => 'naoresponder.lmts@gmail.com', 'titulo' => 'Solicita - LMTS', 'toEmail' => $to_email, 'subject' => $subject];
+        foreach ($requisicoes as $requisicao) {
 
-        SendEmail::dispatch($details);
-        return redirect()->back()->with('success', 'Documento(s) Indeferidos(s) com Sucesso!'); //volta pra mesma url
+            $requisicao->anotacoes = $request->anotacoes;
+            $requisicao->status = "Indeferido";
+            $requisicao->servidor_id = $servidor->id;
+            $requisicao->save();
+
+            $aluno = Aluno::where('id', $requisicao->aluno_id)->first();
+            $user = User::where('id', $aluno->user_id)->first();
+            $documento = Documento::where('id', $requisicao->documento_id)->first();
+
+            $data = [
+                'usuario' => $user,
+                'aluno' => $aluno,
+                'servidor' => $servidor,
+                'documento' => $requisicao,
+                'nome_documento' => $documento->tipo,
+                'anotacoes' => $requisicao->anotacoes,
+            ];
+
+//            SendEmail::dispatch([
+//                'data' => $data,
+//                'cabecalho' => 'naoresponder.lmts@gmail.com',
+//                'titulo' => 'Solicita - LMTS',
+//                'toEmail' => $user->email,
+//                'subject' => 'Solicita - Status da Requisicao: Indeferido'
+//            ]);
+        }
+
+        return redirect()->back()->with('success', 'Documento(s) Indeferido(s) com Sucesso!');
     }
 
     public function concluirRequisicao(Request $request)
     {
+        $request->validate([
+            'checkboxLinha' => ['required', 'array']
+        ]);
+
+        $ids = $request->checkboxLinha;
+
         $servidorLogado = Auth::user();
         $servidor = Servidor::where('user_id', $servidorLogado->id)->first();
-        $arrayDocumentos = $request->checkboxLinha;
-        $id_documentos = Requisicao_documento::find($arrayDocumentos);//whereIn
-        if (isset($id_documentos)) {
-            foreach ($id_documentos as $id_documento) {
-                $id_documento->status = "Concluído";
-                if ($id_documento->documento_id == 6) {
-                    $id_documento->status = "Concluído - SIGA Desbloqueado";
-                }
-                $id_documento->servidor_id = $servidor->id;
-                $aluno = Aluno::where('id', $id_documento->aluno_id)->first();
-                $user = User::where('id', $aluno->user_id)->first();
-                $documento = Documento::where('id', $id_documento->documento_id)->first();
-                $to_email = $user->email;
-                $nome_documento = $documento->tipo;
-                $data = array(
+
+        $requisicoes = Requisicao_documento::whereIn('id', $ids)->get();
+
+        foreach ($requisicoes as $requisicao) {
+
+            $requisicao->status = "Concluído";
+
+            if ($requisicao->documento_id == 6) {
+                $requisicao->status = "Concluído - SIGA Desbloqueado";
+            }
+
+            $requisicao->servidor_id = $servidor->id;
+            $requisicao->save();
+
+            $aluno = Aluno::where('id', $requisicao->aluno_id)->first();
+            $user = User::where('id', $aluno->user_id)->first();
+            $documento = Documento::where('id', $requisicao->documento_id)->first();
+
+            /*SendEmail::dispatch([
+                'data' => [
                     'usuario' => $user,
                     'aluno' => $aluno,
                     'servidor' => $servidor,
-                    'documento' => $id_documento,
-                    'nome_documento' => $nome_documento,
-                    'anotacoes' => $id_documento->anotacoes,
-                );
-                $id_documento->save();
-                $subject = 'Solicita - Status da Requisicao: ' . $id_documento->status;
-
-                $details = ['data' => $data, 'cabecalho' => 'naoresponder.lmts@gmail.com', 'titulo' => 'Solicita - LMTS', 'toEmail' => $to_email, 'subject' => $subject];
-
-                SendEmail::dispatch($details);
-
-            }
+                    'documento' => $requisicao,
+                    'nome_documento' => $documento->tipo,
+                    'anotacoes' => $requisicao->anotacoes,
+                ],
+                'cabecalho' => 'naoresponder.lmts@gmail.com',
+                'titulo' => 'Solicita - LMTS',
+                'toEmail' => $user->email,
+                'subject' => 'Solicita - Status da Requisicao: ' . $requisicao->status
+            ]);*/
         }
-        return redirect()->back()->with('success', 'Documento(s) Concluido(s) com Sucesso!'); //volta pra mesma url
+
+        return redirect()->back()->with('success', 'Documento(s) Concluídos com Sucesso!');
     }
 
     public function exibirBusca()
