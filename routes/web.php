@@ -95,8 +95,7 @@ Route::group(['middleware'=> ['CheckServidor', 'verified', 'banned']], function(
 //----------------------------------------------ALUNO---------------------------------------------------
 // Route::group(['middleware'=> 'verified'], function(){
 Route::middleware('CheckAluno')->group(function(){
-    Route::get('/home-aluno', [AlunoController::class, 'index'])->name('home-aluno');
-    Route::get('/home-aluno',[AlunoController::class, 'homeAluno'])->name('home-aluno');
+    Route::get('/home-aluno',[AlunoController::class, 'homeAluno'])->name('home-aluno')->middleware(['auth', 'verified']);
     Route::get('/listar-requisicoes-aluno',[AlunoController::class, 'listarRequisicoes'])->name('listar-requisicoes-aluno');
     Route::post('/confirmacao-requisicao', [RequisicaoController::class, 'novaRequisicao'])->name('confirmacao-requisicao'); //------------
     Route::post('/finaliza-requisicao', [RequisicaoController::class, 'finalizaRequisicao'])->name('finaliza-requisicao');
@@ -133,6 +132,9 @@ Route::middleware('CheckAluno')->group(function(){
     Route::get('/baixar-nada-consta/{requisicao_documento}', [BibliotecarioController::class, 'baixarNadaConsta'])->name('baixar-nada-consta-aluno');
     Route::get('/baixar-deposito/{requisicao_documento}', [BibliotecarioController::class, 'baixarDeposito'])->name('baixar-deposito-aluno');
     Route::get('/baixar-retificacao/{retificacao}', [BibliotecarioController::class, 'baixarRetificacao'])->name('baixar-retificacao-aluno');
+
+    Route::get('/verify-new-email/{id}', [PerfilAlunoController::class, 'verifyNewEmail'])
+        ->name('verify.new.email')->middleware(['signed']);
 
     //Processos
     Route::prefix('/processos')->middleware('EmDesenvolvimento')->controller(ProcessoController::class)->group(function(){
