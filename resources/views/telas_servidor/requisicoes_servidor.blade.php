@@ -516,12 +516,6 @@
             }
         }
 
-        function exibirAnotacoes(id){
-            var s = '#'+id;
-            $(s).modal('show');
-            console.log(s)
-
-        }
 
 
 
