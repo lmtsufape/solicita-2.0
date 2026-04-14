@@ -107,7 +107,7 @@ class UsuarioController extends Controller
         if ($usuario->aluno) {
             $aluno = $usuario->aluno;
             if ($request->cpf) {
-                $aluno->cpf = $request->cpf;
+                $aluno->cpf = preg_replace('/[^0-9]/', '', $request->cpf);
                 $aluno->update();
             }
             $unidade = Unidade::find($request->unidade);
