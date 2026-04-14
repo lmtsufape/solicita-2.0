@@ -108,6 +108,12 @@ class UsuarioController extends Controller
             $aluno = $usuario->aluno;
             if ($request->cpf) {
                 $aluno->cpf = preg_replace('/[^0-9]/', '', $request->cpf);
+
+                if (Aluno::where('cpf', $aluno->cpf)
+                    ->where('id', '!=', $aluno->id) // ignores the current user
+                    ->exists()) {
+                    return back()->withErrors(['cpf' => 'Este CPF já está em uso.'])->withInput();
+                }
                 $aluno->update();
             }
             $unidade = Unidade::find($request->unidade);
