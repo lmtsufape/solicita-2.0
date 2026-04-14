@@ -129,7 +129,17 @@
                     @endif
 
                     <!--BIBLIOTECARIO-->
-                    @if($usuario->tipo == 'bibliotecario')
+                    @if($usuario->tipo == 'bibliotecario' || $usuario->tipo == 'analistabibliotecario')
+                        <div class="row justify-content-center">
+                            <div class="form-group col-md-12">
+                                <label for="tipo" class="row px-3 textoFicha">Tipo de Perfil:
+                                    <select name="tipo" id="tipo_perfil" class="form-control" onchange="toggleCrbField()">
+                                        <option value="bibliotecario" {{ $usuario->tipo == 'bibliotecario' ? 'selected' : '' }}>Bibliotecário (Completo)</option>
+                                        <option value="analistabibliotecario" {{ $usuario->tipo == 'analistabibliotecario' ? 'selected' : '' }}>Analista Bibliotecário (Nada Consta)</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
                         <div class="row justify-content-center">
                             <div class="form-group col-md-12">
                                 <label for="crb" class="row px-3 textoFicha">CRB:
@@ -147,7 +157,7 @@
                         </div>
                     @endif
 
-                    @if($usuario->tipo == 'bibliotecario' || $usuario->tipo == 'servidor')
+                    @if($usuario->tipo == 'bibliotecario' || $usuario->tipo == 'analistabibliotecario' || $usuario->tipo == 'servidor')
                         <div class="row justify-content-center">
                             <div class="form-group col-md-12">
                                 <label for="matricula" class="row textoFicha px-3">Matrícula:
@@ -166,8 +176,9 @@
                         <div class="row justify-content-center">
                             <div class="form-check">
                                 <label for="active" class="form-check-label textoFicha">Ativo: </label>
+                                <input type="hidden" name="active" value="0">
                                 <input type="checkbox" name="active" id="active" class="form-check-input ml-2 border-dark
-                                    @error('active') is-invalid @enderror" value="{{ $usuario->active ?? ''}}" {{ $usuario->active ? 'checked' : '' }}>
+                                    @error('active') is-invalid @enderror" value="1" {{ $usuario->active ? 'checked' : '' }}>
 
                                 @error('active')
                                     <span class="invalid-feedback" role="alert" style="overflow: visible; display:block">

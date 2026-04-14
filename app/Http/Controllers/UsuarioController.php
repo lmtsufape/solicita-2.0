@@ -74,6 +74,11 @@ class UsuarioController extends Controller
                 $usuarioEspecifico = Servidor::where('user_id', $usuario->id)->first();
                 return view('telas_admin.editar-usuario', compact('usuario', 'usuarioEspecifico'));
 
+            case "analistabibliotecario":
+            $usuarioEspecifico = Bibliotecario::where('user_id', $usuario->id)->first();
+            $bibliotecaEspecifica = Biblioteca::where('id', $usuarioEspecifico->biblioteca_id)->first();
+            return view('telas_admin.editar-usuario', compact('usuario', 'usuarioEspecifico', 'bibliotecaEspecifica'));
+
             default:
                 return view('telas_admin.editar-usuario', compact('usuario'));
 
@@ -93,6 +98,12 @@ class UsuarioController extends Controller
             'cpf' => $usuario->tipo == 'aluno' ? 'required|string|cpf' : '',
         ]);
 
+        if ($request->has('tipo')) {
+            $request->validate([
+                'tipo' => 'in:bibliotecario,analistabibliotecario',
+            ]);
+        }
+
         if ($request->email != $usuario->email) {
             $userCheckEmail = User::where('email', 'ilike',$request->email)->first();
             if ($userCheckEmail != null) {
@@ -102,6 +113,9 @@ class UsuarioController extends Controller
 
         $usuario->name = $request->name;
         $usuario->email = $request->email;
+        if ($request->has('tipo')) {
+            $usuario->tipo = $request->tipo;
+        }
         $usuario->update();
 
         if ($usuario->aluno) {
@@ -122,23 +136,21 @@ class UsuarioController extends Controller
             case "aluno":
                 break;
                 case "bibliotecario":
-                    if ($request->has('active')) {
-                    $usuario->active = 1;
-                } else {
-                    $usuario->active = 0;
+                case "analistabibliotecario":
+                $usuario->active = $request->input('active') ? 1 : 0;
+                if($usuario->bibliotecario) {
+                    $usuario->bibliotecario->crb = $request->crb;
+                    if ($request->filled('matricula')) {
+                        $usuario->bibliotecario->matricula = $request->matricula;
+                    }
+                    $usuario->bibliotecario->update();
                 }
-                $usuario->bibliotecario->crb = $request->crb;
-                $usuario->bibliotecario->update();
 
                 $usuario->update();
 
                 break;
             case "servidor":
-                if ($request->has('active')) {
-                    $usuario->active = 1;
-                } else {
-                    $usuario->active = 0;
-                }
+                $usuario->active = $request->input('active') ? 1 : 0;
                 $usuario->update();
 
                 break;

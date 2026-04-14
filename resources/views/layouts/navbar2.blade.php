@@ -38,6 +38,11 @@ crossorigin="anonymous"></script>
                 @component('componentes.navbarBibliotecario')
                 @endcomponent
             @endif
+
+        @if(Auth::user()->tipo == 'analistabibliotecario')
+                @component('componentes.navbarAnalista')
+                @endcomponent
+            @endif
         </nav>
     @endif
 
