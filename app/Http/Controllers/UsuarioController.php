@@ -67,6 +67,9 @@ class UsuarioController extends Controller
 
             case "bibliotecario":
                 $usuarioEspecifico = Bibliotecario::where('user_id', $usuario->id)->first();
+                if (!$usuarioEspecifico || !$usuarioEspecifico->biblioteca_id) {
+                    return redirect()->route('listar-usuario')->with('error', 'O bibliotecario informado nao possui biblioteca vinculada.');
+                }
                 $bibliotecaEspecifica = Biblioteca::where('id', $usuarioEspecifico->biblioteca_id)->first();
                 return view('telas_admin.editar-usuario', compact('usuario', 'usuarioEspecifico', 'bibliotecaEspecifica'));
 
@@ -75,9 +78,12 @@ class UsuarioController extends Controller
                 return view('telas_admin.editar-usuario', compact('usuario', 'usuarioEspecifico'));
 
             case "analistabibliotecario":
-            $usuarioEspecifico = Bibliotecario::where('user_id', $usuario->id)->first();
-            $bibliotecaEspecifica = Biblioteca::where('id', $usuarioEspecifico->biblioteca_id)->first();
-            return view('telas_admin.editar-usuario', compact('usuario', 'usuarioEspecifico', 'bibliotecaEspecifica'));
+                $usuarioEspecifico = Bibliotecario::where('user_id', $usuario->id)->first();
+                if (!$usuarioEspecifico || !$usuarioEspecifico->biblioteca_id) {
+                    return redirect()->route('listar-usuario')->with('error', 'O analista bibliotecario informado nao possui biblioteca vinculada.');
+                }
+                $bibliotecaEspecifica = Biblioteca::where('id', $usuarioEspecifico->biblioteca_id)->first();
+                return view('telas_admin.editar-usuario', compact('usuario', 'usuarioEspecifico', 'bibliotecaEspecifica'));
 
             default:
                 return view('telas_admin.editar-usuario', compact('usuario'));
