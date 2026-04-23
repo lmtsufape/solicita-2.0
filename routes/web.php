@@ -192,6 +192,37 @@ Route::group(['middleware'=> ['CheckBibliotecario', 'banned']], function(){
     Route::post('/gerar-deposito/{requisicao_documento}',[\App\Http\Controllers\BibliotecarioController::class, 'gerarDeposito'])->name('gerar-deposito');
 });
 
+
+
+//Analista Bibliotecário
+Route::group(['middleware'=> ['CheckBibliotecarioOuAnalista', 'banned']], function(){
+    Route::get('/home-bibliotecario', [BibliotecarioController::class, 'index'])->name('home-bibliotecario');
+    Route::get('/perfil-bibliotecario',[BibliotecarioController::class, 'perfil'])->name('perfil-bibliotecario');
+    Route::get('/editar-bibliotecario',[BibliotecarioController::class, 'editarBibliotecario'])->name('editar-bibliotecario');
+    Route::post('/atualizar-bibliotecario',[BibliotecarioController::class, 'atualizarBibliotecario'])->name('atualizar-bibliotecario');
+    Route::get('/editar-senha-bibliotecario',[BibliotecarioController::class, 'editarSenha'])->name('editar-senha-bibliotecario');
+    Route::post('/atualizar-senha-bibliotecario',[BibliotecarioController::class, 'atualizarSenha'])->name('atualizar-senha-bibliotecario');
+    Route::get('/listar-fichas',[BibliotecarioController::class, 'listarSolicitacoes'])->name('listar-fichas');
+    Route::get('/visualizar-ficha/{requisicao_id}',[BibliotecarioController::class, 'visualizarFicha'])->name('visualizar-ficha');
+
+    Route::get('/home-bibliotecario', [BibliotecarioController::class, 'index'])->name('home-bibliotecario');
+    Route::post('/atualizar-nome-nada-consta/{nadaConstaId}',[\App\Http\Controllers\RequisicaoController::class, 'EditarNomeAutorNadaConsta'])->name('atualizar-nome-nada-consta');
+    Route::get('/avaliar-nada-consta/{requisicao_id}',[\App\Http\Controllers\BibliotecarioController::class, 'avaliarNadaConsta'])->name('avaliar-nada-consta');
+    Route::get('/editar-nada-consta/{requisicao_id}',[\App\Http\Controllers\BibliotecarioController::class, 'editarNomeNadaConsta'])->name('editar-nada-consta');
+    Route::get('/avaliar-nada-consta/{requisicao_id}/baixarAnexoComprovante',[\App\Http\Controllers\BibliotecarioController::class, 'baixarAnexoComprovante'])->name('baixa-anexo-comprovante');
+    Route::get('/avaliar-nada-consta/{requisicao_id}/baixarAnexoTermoAceitacao',[\App\Http\Controllers\BibliotecarioController::class, 'baixarAnexoTermoAceitacao'])->name('baixar-anexo-termo-aceitacao');
+    Route::get('/visualizar-nada-consta/{retificacao}/baixarAnexoRetificacao',[\App\Http\Controllers\BibliotecarioController::class, 'baixarAnexoRetificacao'])->name('baixar-anexo-retificacao');
+    Route::post('/deferir-nada-consta',[\App\Http\Controllers\BibliotecarioController::class, 'deferirNadaConsta'])->name('deferir-nada-consta');
+    Route::post('/indeferir-nada-consta',[\App\Http\Controllers\BibliotecarioController::class, 'indeferirNadaConsta'])->name('indeferir-nada-consta');
+    Route::post('/retificar-requisicao-documento',[\App\Http\Controllers\BibliotecarioController::class, 'retificarRequisicaoDocumento'])->name('retificar-requisicao-documento');
+    Route::get('/visualizar-nada-consta/{requisicao_id}',[\App\Http\Controllers\BibliotecarioController::class, 'visualizarNadaConsta'])->name('visualizar-nada-consta');
+    Route::post('/gerar-nada-consta/{requisicao_documento}',[\App\Http\Controllers\BibliotecarioController::class, 'gerarNadaConsta'])->name('gerar-nada-consta');
+});
+
+Route::group(['middleware'=> ['CheckBibliotecarioOuAnalista', 'banned']], function(){
+    Route::get('/home-bibliotecario', [BibliotecarioController::class, 'index'])->name('home-bibliotecario');
+});
+
 // ---------------------------------------REQUISICAO------------------------------------------------------------------
 Route::get('/home', [\App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware(['verified', 'banned']);
 // Route::get('/mail-send', 'MailController@send');

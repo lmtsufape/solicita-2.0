@@ -53,7 +53,7 @@ class HomeController extends Controller
           return view('autenticacao.home-administrador');
           }
 
-          else if (Auth::user()->tipo == 'bibliotecario') {
+          else if (Auth::user()->tipo == 'bibliotecario' || Auth::user()->tipo == 'analistabibliotecario') {
               return redirect()->route('listar-fichas');
           }
         }

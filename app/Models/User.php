@@ -54,6 +54,7 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
         'administrador' => 'administrador',
         'aluno' => 'aluno',
         'bibliotecario' => 'bibliotecario',
+        'analistabibliotecario'=> 'analistabibliotecario',
     ];
 
 

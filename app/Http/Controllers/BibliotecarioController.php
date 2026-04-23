@@ -47,7 +47,8 @@ class BibliotecarioController extends Controller
     }
 
     public function listarSolicitacoes(Request $request)
-    {
+    {  
+         if (Auth::user()->tipo === 'bibliotecario') {
         $data_inicio = $request->data_inicio;
         $data_fim = $request->data_fim;
 
@@ -117,9 +118,89 @@ class BibliotecarioController extends Controller
 
         $idUser = Auth::user()->id;
         $bibliotecario = Bibliotecario::where('user_id', $idUser)->first();
-        $unidadeBibliotecario = $bibliotecario->biblioteca->unidade_id;
+        $unidadeBibliotecario = null;
+        if ($bibliotecario && $bibliotecario->biblioteca) {
+            $unidadeBibliotecario = $bibliotecario->biblioteca->unidade_id;
+        }
 
         return view('telas_bibliotecario.listar_documentos_solicitados', compact('requisicoesFichas','idUser', 'bibliotecario', 'stats'));
+    }
+    
+    else if (Auth::user()->tipo === 'analistabibliotecario') {
+        $data_inicio = $request->data_inicio;
+        $data_fim = $request->data_fim;
+
+        $query = Requisicao_documento::leftJoin('depositos', 'requisicao_documentos.deposito_id', '=', 'depositos.id')
+            ->leftJoin('ficha_catalograficas', 'requisicao_documentos.ficha_catalografica_id', '=', 'ficha_catalograficas.id')
+            ->leftJoin('nada_constas', 'requisicao_documentos.nada_consta_id', '=', 'nada_constas.id')
+            ->where(function($query) {
+                $query->orWhereNotNull('requisicao_documentos.nada_consta_id');
+            });
+
+        if ($data_inicio && $data_fim) {
+            $query->whereBetween('requisicao_documentos.created_at', [
+                Carbon::parse($data_inicio)->startOfDay(),
+                Carbon::parse($data_fim)->endOfDay()
+            ]);
+        } elseif ($data_inicio) {
+            $query->where('requisicao_documentos.created_at', '>=', Carbon::parse($data_inicio)->startOfDay());
+        } elseif ($data_fim) {
+            $query->where('requisicao_documentos.created_at', '<=', Carbon::parse($data_fim)->endOfDay());
+        } else {
+            $query->where('requisicao_documentos.created_at', '>=', Carbon::now()->subMonths(4));
+        }
+
+        if ($request->search) {
+            $search = $request->search;
+            $query->where(function ($sub_query) use ($search){
+                $sub_query->where('depositos.autor_nome', 'ilike', "%{$search}%")
+                ->orWhere('ficha_catalograficas.autor_nome', 'ilike', "%{$search}%")
+                ->orWhere('nada_constas.autor_nome', 'ilike', "%{$search}%")
+                ->orWhere('requisicao_documentos.id', 'ilike', "%{$search}%");
+            });
+        }
+
+        $query->select(
+            'requisicao_documentos.*',
+            DB::raw('COALESCE(depositos.autor_nome, ficha_catalograficas.autor_nome, nada_constas.autor_nome) as autor_nome'),
+            DB::raw('COALESCE(depositos.created_at, ficha_catalograficas.created_at, nada_constas.created_at) as entity_created_at'),
+            DB::raw('COALESCE(depositos.updated_at, ficha_catalograficas.updated_at, nada_constas.updated_at) as entity_updated_at')
+        );
+
+        // Statistics for Dashboard
+        $statsQuery = clone $query;
+        $stats = [
+            'total' => $statsQuery->count(),
+            'concluidos' => (clone $statsQuery)->where('requisicao_documentos.status', 'Concluido')->count(),
+            'em_andamento' => (clone $statsQuery)->where('requisicao_documentos.status', 'Em andamento')->count(),
+            'rejeitados' => (clone $statsQuery)->where('requisicao_documentos.status', 'Rejeitado')->count(),
+            'depositos' => (clone $statsQuery)->whereNotNull('requisicao_documentos.deposito_id')->count(),
+            'nada_constas' => (clone $statsQuery)->whereNotNull('requisicao_documentos.nada_consta_id')->count(),
+            'fichas' => (clone $statsQuery)->whereNotNull('requisicao_documentos.ficha_catalografica_id')->count(),
+        ];
+
+        $requisicoesFichas = $query->when($request->sort === 'status', function ($query) use ($request) {
+            $query->orderByRaw("
+                CASE requisicao_documentos.status
+                    WHEN 'Em andamento' THEN 1
+                    WHEN 'Concluido' THEN 2
+                    WHEN 'Rejeitado' THEN 3
+                    ELSE 4
+                END " . ($request->direction ?? 'asc')
+            );
+        }, function ($query) use ($request) {
+            $query->orderBy($request->sort ?? 'entity_created_at', $request->direction ?? 'desc');
+        })->paginate(10);
+
+        $idUser = Auth::user()->id;
+        $bibliotecario = Bibliotecario::where('user_id', $idUser)->first();
+        $unidadeBibliotecario = null;
+        if ($bibliotecario && $bibliotecario->biblioteca) {
+            $unidadeBibliotecario = $bibliotecario->biblioteca->unidade_id;
+        }
+
+        return view('telas_bibliotecario.listar_documentos_solicitados', compact('requisicoesFichas','idUser', 'bibliotecario', 'stats'));
+    }
     }
 
     public function visualizarFicha($requisicaoId)
@@ -788,13 +869,16 @@ class BibliotecarioController extends Controller
             'matricula' => 'required|unique:bibliotecarios|numeric|digits_between:1,10',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'tipo' => 'required|in:bibliotecario,analistabibliotecario',
+            'crb' => 'nullable',
             'biblioteca' => 'required',
         ]);
         $usuario = new User();
         $usuario->name = $request->input('name');
         $usuario->email = $request->input('email');
         $usuario->password = Hash::make($request->input('password'));
-        $usuario->tipo = 'bibliotecario';
+        $usuario->tipo = $request->tipo;
+        $usuario->markEmailAsVerified();
         $usuario->save();
 
         // biblioteca
@@ -806,7 +890,7 @@ class BibliotecarioController extends Controller
         $bibliotecario->biblioteca_id = $request->input('biblioteca');
         $bibliotecario->crb = $request->crb;
         $bibliotecario->save();
-        $usuario->sendEmailVerificationNotification();
+        $usuario->markEmailAsVerified();
         return redirect()->route('home')->with('success', 'Bibliotecario cadastrado com sucesso!');
     }
 
@@ -822,14 +906,19 @@ class BibliotecarioController extends Controller
     public function atualizarBibliotecario(Request $request)
     {
         //atualização dos dados
-
         $user = Auth::user();
         $bibliotecario = Bibliotecario::where('user_id', $user->id)->first();
-        if ($user->email != $request->email) {
-            $request->validate([
-                'email' => ['bail', 'required', 'string', 'email', 'max:255', 'unique:users'],
-            ]);
+
+        if (!$bibliotecario) {
+            return redirect()->back()->with('error', 'Bibliotecario nao encontrado.');
         }
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['bail', 'required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'crb' => ['required', 'string'],
+        ]);
+
         $user->name = $request->name;
         $user->email = $request->email;
         $bibliotecario->crb = $request->crb;
@@ -837,9 +926,6 @@ class BibliotecarioController extends Controller
         $user->save();
         $bibliotecario->save();
 
-        //dados para ser exibido na view
-        $idUser = Auth::user()->id;
-        $user = User::find($idUser); //Usuário Autenticado
         return redirect()->route('home-bibliotecario')
             ->with('success', 'Seus dados foram atualizados!');
     }

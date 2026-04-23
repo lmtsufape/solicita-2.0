@@ -64,6 +64,14 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label class="textoFicha" for="tipo">Tipo de Usuário</label>
+                                <select name="tipo" id="tipo" class="form-control" required>
+                                    <option value="" disabled selected>-- Selecionar Tipo --</option>
+                                    <option value="bibliotecario">Bibliotecário</option>
+                                    <option value="analistabibliotecario">Analista Bibliotecário</option>
+                                </select>
+                            </div>
 
                             <div class="row form-group justify-content-between py-2">
                                 <div class="col-md-6">
