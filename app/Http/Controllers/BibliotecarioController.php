@@ -906,35 +906,26 @@ class BibliotecarioController extends Controller
     public function atualizarBibliotecario(Request $request)
     {
         //atualização dos dados
-
-        $user = User::find($request->id_usuario);
-        if (!$user) {
-            return redirect()->back()->with('error', 'Usuário não encontrado.');
-        }
+        $user = Auth::user();
         $bibliotecario = Bibliotecario::where('user_id', $user->id)->first();
-        if ($user->email != $request->email) {
-            $request->validate([
-                'email' => ['bail', 'required', 'string', 'email', 'max:255', 'unique:users'],
-                'name' => ['required', 'string', 'max:255'],
-                'tipo' => ['required', 'in:bibliotecario,analistabibliotecario'],
-            ]);
+
+        if (!$bibliotecario) {
+            return redirect()->back()->with('error', 'Bibliotecario nao encontrado.');
         }
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['bail', 'required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'crb' => ['required', 'string'],
+        ]);
+
         $user->name = $request->name;
         $user->email = $request->email;
         $bibliotecario->crb = $request->crb;
-        $user->tipo = $request->tipo;
-        $user->active = $request->has('active') ? 1 : 0;
-
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
 
         $user->save();
         $bibliotecario->save();
 
-        //dados para ser exibido na view
-        $idUser = Auth::user()->id;
-        $user = User::find($idUser); //Usuário Autenticado
         return redirect()->route('home-bibliotecario')
             ->with('success', 'Seus dados foram atualizados!');
     }
