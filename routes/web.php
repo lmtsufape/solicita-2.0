@@ -29,7 +29,7 @@ use App\Models\Processo;
 
 //----------------------------------------------USUARIO----------------------------------------------------------------
 Route::get('/', [AlunoController::class,'index'])->name('login');
-Auth::routes(['verify' => false]);
+Auth::routes(['verify' => true]);
 
 // ---------------------------------------------ALUNO-------------------------------------------------------------------
 Route::get('/cadastro',[AlunoController::class,'createAluno'])->name('cadastro');
@@ -224,7 +224,7 @@ Route::group(['middleware'=> ['CheckBibliotecarioOuAnalista', 'banned']], functi
 });
 
 // ---------------------------------------REQUISICAO------------------------------------------------------------------
-Route::get('/home', [\App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware(['banned']);
+Route::get('/home', [\App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware(['verified', 'banned']);
 // Route::get('/mail-send', 'MailController@send');
 
 // Route::get('/edita-perfil','PerfilController@editaPerfil')->name('edita-perfil');
