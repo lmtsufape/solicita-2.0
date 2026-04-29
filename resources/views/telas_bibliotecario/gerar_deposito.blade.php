@@ -93,12 +93,12 @@
         <p>UNIVERSIDADE FEDERAL DO AGRESTE DE PERNAMBUCO</p>
         <p>REITORIA DA UFAPE</p>
         <p>SISTEMA INTEGRADO DE BIBLIOTECAS</p>
-        <p class="doc">DECLARAÇÃO DE DEPÓSITO DO TRABALHO <br> ACADÊMICO E NADA CONSTA</p>
+        <p class="doc">DECLARAÇÃO DE DEPÓSITO DO TRABALHO</p>
     </div>
     <div class="corpo">
         Declaramos que o(a) Discente <strong>{{$discente}}</strong>, portador(a) do CPF <strong>{{$cpf}}</strong>, regularmente matriculado(a) no curso de <strong>{{$curso}}</strong> da <b>Universidade Federal do Agreste de Pernambuco - UFAPE</b> realizou  o depósito do seu trabalho de conclusão de curso, cujo título é: "<b>{!! $tcc !!}</b>"{{ (($registro_patente ?? 'false') == 'true') ? ', com registro de patente' : ', sem registro de patente' }}, bem como a entrega do Termo de Autorização para o depósito no Repositório Institucional, cumprindo todos os requisitos necessários. <br>
         <br>
-        Portanto, não constando pendências com este setor. <br> <br>
+        <br>
     </div>
     <div id="data">
         <p>{{ \Carbon\Carbon::now()->format('d/m/Y') }}</p>
