@@ -61,10 +61,12 @@
 
                         <div class="pt-1 pb-3">
                             <label class="textoFicha">Outros documentos:</label>
+                            {{--
                             <div>
                                 <input type="radio" name="documento" value="comprovante" id="ComprovanteNadaConsta">
                                 <label for="ComprovanteNadaConsta">Alunos não Concluintes - Comprovante de Nada Consta</label>
                             </div>
+                            --}}
                             <div>
                                 <input type="radio" name="documento" value="ComprovanteDepositoTrabalhoConclusao" id="ComprovanteDepositoTrabalhoConclusao">
                                 <label for="ComprovanteDepositoTrabalhoConclusao">Alunos Concluintes - Depósito do Trabalho de Conclusão de Curso e Nada Consta na Biblioteca</label>
