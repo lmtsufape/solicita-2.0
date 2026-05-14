@@ -30,7 +30,7 @@ class HomeController extends Controller
       //Copie e cole isso na outra rota que for usar ------------->
         if(Auth::check()){
           if(Auth::user()->tipo == 'servidor'){
-            $cursos = Curso::all();
+            $cursos = Curso::ordenadoPorTipo()->get();
             $requisicoes= DB::table('requisicao_documentos')
                              ->join('requisicaos', 'requisicaos.id', '=', 'requisicao_documentos.requisicao_id')
                              ->join('perfils', 'requisicaos.perfil_id', '=', 'perfils.id')
