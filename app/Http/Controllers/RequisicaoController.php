@@ -69,7 +69,7 @@ class RequisicaoController extends Controller
         $curso = Curso::where('id', $request->curso_id)->first();
         $cursoSelecionado = Curso::where('id', $request->curso_id)->first();
         $documentoSelecionado = Documento::where('id', $request->titulo_id)->first();
-        $cursos = Curso::all();
+        $cursos = Curso::ordenadoPorTipo()->get();
         $documentos = Documento::all();
         //Verifica se o card clicado foi igual a "TODOS"
         // ->withTrashed()
