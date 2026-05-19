@@ -42,14 +42,22 @@ class PerfilAlunoController extends Controller
     public function storeEditarInfo(Request $request){
       //atualização dos dados
       $user = Auth::user();
-      if($user->email!=$request->email){
+      if($user->email != $request->email){
         $request->validate([
           'email' => ['bail','required', 'string', 'email', 'max:255', 'unique:users'],
         ]);
+
+        //para verificar email ao mudar
+          $user->pending_email = $request->email; // salva como pendente
+          $user->name = $request->name;
+          $user->save();
+          $user->notify(new \App\Notifications\VerifyNewEmail);
+          return redirect()->route('verification.notice');
       }
       $user->name = $request->name;
       $user->email = $request->email;
       $user->save();
+
       //dados para ser exibido na view
       $cursos = Curso::all();
       $unidades = Unidade::all();
@@ -257,4 +265,20 @@ public function definirPerfilDefault(Request $request){
     }
     return redirect()->back()->with('success', 'Definido com sucesso!');
   }
+
+  //Metodo para verificar novo email ao mudar na edição de perfil
+    public function verifyNewEmail(Request $request){
+        $user = User::find($request->id);
+
+        if(!$user || !$user->pending_email){
+            return redirect()->route('perfil-aluno')->with('error', 'Link inválido ou expirado.');
+        }
+
+        $user->email = $user->pending_email;
+        $user->pending_email = null;
+        $user->email_verified_at = now();
+        $user->save();
+
+        return redirect()->route('perfil-aluno')->with('success', 'E-mail atualizado com sucesso!');
+    }
 }

@@ -27,7 +27,7 @@ class AlunoController extends Controller
   {
     // return view('autenticacao.home-aluno');
     if(Auth::user()){
-      return redirect()->route('home');
+      return redirect()->route('home-aluno');
     }
     return view('autenticacao.login');
   }
@@ -115,7 +115,15 @@ class AlunoController extends Controller
     }
     DB::commit();
 
-    return redirect('/')->with('success', 'Cadastrado com sucesso!');
+
+
+    Auth::login($user);
+
+    $user->sendEmailVerificationNotification();
+
+    //para verificar email logo apos cadastro
+      return redirect()->route('verification.notice');
+      //return redirect('home-aluno')->with('success', 'Cadastrado com sucesso!');
 
   }
   public function home(){
