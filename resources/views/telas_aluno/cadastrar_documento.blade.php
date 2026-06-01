@@ -99,7 +99,7 @@
                                     <div class="form-group">
                                         <label for="folhas">Folhas: <span style="color: red">*</span></label>
                                         <input type="number" class="form-control" id="folhas" name="folhas"
-                                               placeholder="Quantidade de Folhas" value="" required>
+                                               placeholder="Quantidade de Folhas" value="" min="0" required>
                                     </div>
                                 </div>
 
