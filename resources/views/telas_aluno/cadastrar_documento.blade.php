@@ -400,7 +400,7 @@
                                     <label for="programa">Nome do Programa de Pós-Graduação <span
                                             style="color: red">*</span></label>
                                     <input type="text" class="form-control" id="programa" name="programa"
-                                           placeholder="Digite o Nome do Programa" value="">
+                                           placeholder="Digite o Nome do Programa" value="" required>
                                 </div>
 
                             </div>

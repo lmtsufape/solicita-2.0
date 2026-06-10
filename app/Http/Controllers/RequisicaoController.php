@@ -212,6 +212,10 @@ class RequisicaoController extends Controller
 
     public function criarDocumento(Request $request)
     {
+        $request->validate([
+            'programa' => $request->tipo_documento == 1 ? 'required|string|max:255' : 'nullable|string|max:255',
+        ]);
+
         $idUser = Auth::user()->id;
         $aluno = Aluno::where('user_id', $idUser)->first();
         $perfil = Perfil::where('aluno_id', $aluno->id)->first();
