@@ -43,10 +43,7 @@
                             <label class="textoFicha">Tipo de Documento:</label>
                             <div>
                                 <input type="checkbox" name="declaracaoVinculo" value="Declaracao de Vinculo"
-                                       id="declaracaoVinculo"> Declaração de vínculo (também disponível pelo
-                                link:</input>
-                                <a target="_blank"
-                                   href="http://www.drca.ufrpe.br/declaracao_vinculo/add" style="color: var(--destaque)">DRCA</a>).</br>
+                                       id="declaracaoVinculo"> Declaração de vínculo.</input></br>
 
                             </div>
                             <div>
