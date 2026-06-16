@@ -21,7 +21,7 @@ class CheckBanned
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            return redirect()->route('login')->with('error', 'Sua conta está suspensa.');
+            return redirect()->route('login')->with('fail', 'Sua conta está suspensa.');
         }
         return $next($request);
     }
