@@ -24,15 +24,15 @@ class Perfil extends Model
     ];
 
     public function requisicao(){
-        return $this->hasMany('App\Models\Requisicao');
+        return $this->hasMany(Requisicao::class);
     }
 
     public function aluno(){
-        return $this->belongsTo('App\Models\Aluno');
+        return $this->belongsTo(Aluno::class);
     }
 
     public function curso(){
-        return $this->belongsTo('App\Models\Curso');
+        return $this->belongsTo(Curso::class);
     }
 
     public function unidade()

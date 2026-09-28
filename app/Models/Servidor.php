@@ -6,20 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Servidor extends Model
 {
-   //
-   protected $fillable = ['matricula'];
+   protected $fillable = ['matricula', 'unidade_id', 'user_id'];
 
 
    public function requisicao(){
-      return $this->hasMany('App\Models\Requisicao');
+      return $this->hasMany(Requisicao::class);
    }
 
    public function unidade(){
-      return $this->belongsTo('App\Models\Unidade');
+      return $this->belongsTo(Unidade::class);
    }
 
    public function user(){
-      return $this->belongsTo('App\Models\User');
+      return $this->belongsTo(User::class);
    }
 
 

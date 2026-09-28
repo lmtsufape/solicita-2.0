@@ -7,22 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 class Unidade extends Model
 {
     //
-    protected $fillable = ['nome'];
+    protected $fillable = ['nome', 'instituicao_id'];
 
 
     public function instituicao(){
-        return $this->belongsTo('App\Models\Instituicao');
+        return $this->belongsTo(Instituicao::class);
     }
 
     public function servidor(){
-        return $this->hasMany('App\Models\Servidor');
+        return $this->hasMany(Servidor::class);
     }
 
     public function curso(){
-        return $this->hasMany('App\Models\Curso');
+        return $this->hasMany(Curso::class);
     }
 
     public function bibliotecas(){
-        return $this->hasMany('App\Models\Biblioteca');
+        return $this->hasMany(Biblioteca::class);
     }
 }

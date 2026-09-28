@@ -12,7 +12,7 @@ class Biblioteca extends Model
     use HasFactory;
     use Notifiable;
 
-    protected $fillable = ['nome'];
+    protected $fillable = ['nome', 'unidade_id', 'email', 'email_nada_consta'];
 
     /**
      * Route notifications for the mail channel.

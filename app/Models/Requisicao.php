@@ -9,11 +9,11 @@ class Requisicao extends Model
     use SoftDeletes;
     protected $dates = ['deleted_at'];
     //
-    protected $fillable = ['aluno_id','data_pedido','hora_pedido'];
+    protected $fillable = ['aluno_id','data_pedido','hora_pedido', 'perfil_id', 'servidor_id'];
 
 
     public function perfil(){
-        return $this->belongsTo('App\Models\Perfil');
+        return $this->belongsTo(Perfil::class);
     }
 
     public function aluno()
@@ -22,11 +22,11 @@ class Requisicao extends Model
     }
 
     public function servidor(){
-        return $this->belongsTo('App\Models\Servidor');
+        return $this->belongsTo(Servidor::class);
     }
 
     public function requisicao_documento(){
-        return $this->hasMany('App\Models\Requisicao_documento');
+        return $this->hasMany(Requisicao_documento::class);
     }
 
 }

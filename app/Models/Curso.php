@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Curso extends Model
 {
     //
-    protected $fillable = ['nome'];
+    protected $fillable = ['nome', 'unidade_id', 'abreviatura'];
 
     public function scopeOrdenadoPorTipo($query)
     {
@@ -44,10 +44,10 @@ class Curso extends Model
     }
 
     public function perfil(){
-        return $this->hasMany('App\Models\Perfil');
+        return $this->hasMany(Perfil::class);
     }
 
     public function unidade(){
-        return $this->belongsTo('App\Models\Unidade');
+        return $this->belongsTo(Unidade::class);
     }
 }

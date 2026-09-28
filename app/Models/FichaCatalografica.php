@@ -12,22 +12,24 @@ class FichaCatalografica extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ['cutter', 'classificacao', 'autor', 'titulo', 'subtitulo', 'local', 'ano', 'folhas', 'ilustracao'];
+    protected $fillable = ['cutter', 'classificacao', 'autor_nome', 'autor_sobrenome',
+                            'titulo', 'subtitulo', 'local', 'ano', 'folhas', 'inclui_anexo',
+                            'inclui_apendice', 'ilustracao', 'anexo', 'tipo_documento_id'];
 
     public function tcc(){
-        return $this->hasOne('App\Models\Tcc');
+        return $this->hasOne(Tcc::class);
     }
 
     public function tese(){
-        return $this->hasOne('App\Models\Tese');
+        return $this->hasOne(Tese::class);
     }
 
     public function palavra_chave(){
-        return $this->hasMany('App\Models\PalavraChave');
+        return $this->hasMany(PalavraChave::class);
     }
 
     public function monografia(){
-        return $this->hasOne('App\Models\Monografia');
+        return $this->hasOne(Monografia::class);
     }
 
     /**

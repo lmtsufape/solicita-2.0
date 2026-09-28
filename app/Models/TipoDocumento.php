@@ -12,7 +12,7 @@ class TipoDocumento extends Model
     use HasFactory;
 
     public function ficha_catalografica(){
-        return $this->belongsTo('App\Models\FichaCatalografica');
+        return $this->belongsTo(FichaCatalografica::class);
     }
 
 }

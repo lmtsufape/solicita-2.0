@@ -12,10 +12,10 @@ class Administrador extends Model
 
     public function instituicao(){
 
-        return $this->hasOne('App\Models\Instituicao');
+        return $this->hasOne(Instituicao::class);
     }
 
     public function user(){
-        return $this->belongsTo('App\Models\User');
+        return $this->belongsTo(User::class);
     }
 }

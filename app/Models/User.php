@@ -13,22 +13,13 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
 {
     use Notifiable;
 
-    // public function sendEmailVerificationNotification()
-    // {
-    //       $this->notify(new App\Notifications\VerificarEmail);
-    // }
-    // Enviar email traduziado
-    // public function sendEmailVerificationNotification()
-    // {
-    //     // $this->notify(new App\Notifications\CustomVerifyEmail);
-    // }
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'tipo',
+        'name', 'email', 'password', 'tipo', 'active'
     ];
 
     /**
@@ -59,16 +50,19 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
 
 
     public function administrador(){
-        return $this->hasOne('App\Models\Administrador');
+        return $this->hasOne(Administrador::class);
     }
+
     public function servidor(){
-        return $this->hasOne('App\Models\Servidor');
+        return $this->hasOne(Servidor::class);
     }
+
     public function bibliotecario(){
-        return $this->hasOne('App\Models\Bibliotecario');
+        return $this->hasOne(Bibliotecario::class);
     }
+
     public function aluno(){
-        return $this->hasOne('App\Models\Aluno');
+        return $this->hasOne(Aluno::class);
     }
 
     public function getJWTIdentifier()
@@ -80,6 +74,7 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     {
         return [];
     }
+    
     public function sendApiEmailVerificationNotification()
     {
         $this->notify(new VerifyApiEmail); // my notification

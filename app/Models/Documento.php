@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Documento extends Model
 {
-    //
-    protected $fillable = ['tipo'];
+
+    protected $fillable = ['tipo', 'detalhes'];
 
     public function requisicao_documento(){
         return $this->belongsTo(Requisicao_documento::class);

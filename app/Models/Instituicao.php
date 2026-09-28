@@ -6,20 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Instituicao extends Model
 {
-    //
-    protected $fillable = ['nome'];
+
+    protected $fillable = ['nome', 'administrador_id'];
 
 
 
     public function administrador(){
 
-        return $this->belongsTo('App\Models\Administrador');
+        return $this->belongsTo(Administrador::class);
 
     }
 
     public function unidade(){
 
-        return $this->hasMany('App\Models\Unidade');
+        return $this->hasMany(Unidade::class);
     }
 
 

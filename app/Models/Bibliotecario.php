@@ -9,16 +9,17 @@ class Bibliotecario extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['matricula', 'crb', 'user_id', 'biblioteca_id'];
 
     public function user(){
-        return $this->belongsTo('App\Models\User','user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function biblioteca(){
-        return $this->belongsTo('App\Models\Biblioteca');
+        return $this->belongsTo(Biblioteca::class);
     }
 
     public function requisicao_documento(){
-        return $this->hasMany('App\Models\Requisicao_documento');
+        return $this->hasMany(Requisicao_documento::class);
     }
 }
