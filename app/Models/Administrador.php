@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Administrador extends Model
 {
-    //
-    protected $fillable = ['matricula'];
+    use HasFactory;
 
+    protected $fillable = ['matricula', 'user_id'];
 
     public function instituicao(){
 

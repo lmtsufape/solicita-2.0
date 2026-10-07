@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Aluno extends Model
 {
-    //
+    use HasFactory;
+
     protected $fillable = ['cpf', 'user_id'];
 
     public function perfil(){
@@ -23,6 +25,11 @@ class Aluno extends Model
 
     public function requisicoes(){
         return $this->hasMany(Requisicao::class);
+    }
+
+    public function fichasCatalograficas()
+    {
+        return $this->hasMany(FichaCatalografica::class, 'aluno_id');
     }
 
 }

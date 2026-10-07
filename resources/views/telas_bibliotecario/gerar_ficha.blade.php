@@ -127,12 +127,7 @@
 
     <!-- Topo da ficha -->
 
-    <p>Dados Internacionais de Catalogação na Publicação (CIP)<br></p>
-    @if($unidade->nome == 'UPE - Campus Garanhuns')<p>Universidade de Pernambuco<br></p> @else <p>Universidade Federal
-        do Agreste de Pernambuco<br></p>@endif
-    @if($unidade->nome == 'UPE - Campus Garanhuns')<p>Núcleo de Gestão de Bibliotecas e Documentação - NBID<br>
-    </p> @else <p>Sistema Integrado de Bibliotecas (SIB-UFAPE)</p><br>@endif
-
+    <p>Ficha de identificação da obra elaborada pelo autor, através do programa de geração automática da UFAPE</p>
 
 </div>
 <div class="quadrado">
@@ -400,9 +395,6 @@
         </tr>
 
     </table>
-</div>
-
-<div class="text-center" style="font-family: 'Times New Roman', Times, serif; font-size: 10px; margin-top: 10px"><span>Elaborado pelo(a) bibliotecário(a) {{ $userBibliotecario->name }} ({{ $bibliotecario->crb }})</span>
 </div>
 
 </body>

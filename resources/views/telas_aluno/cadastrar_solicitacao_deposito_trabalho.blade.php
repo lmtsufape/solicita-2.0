@@ -12,7 +12,6 @@
                         action="{{ route('criarDeposito') }}">
                     @csrf
                     <input type="hidden" name="tipo_documento" value="Comprovante de Deposito">
-                    <input type="hidden" name="perfil_id" value="{{$perfil->id}}">
 
                     <! –– Solicitacao Comprovante de Deposito ––>
 

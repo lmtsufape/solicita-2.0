@@ -170,178 +170,19 @@ class RequisicaoController extends Controller
         $usuarios = User::All();
         $alunos = Aluno::All();
         $perfis = Perfil::where('aluno_id', Auth::user()->aluno->id)->get();
-        $tipos_documentos = TipoDocumento::whereIn('tipo', ['Dissertacao', 'Monografia'])->get();
-        return view('autenticacao.formulario-requisicao-bibli', compact('usuarios', 'unidades', 'perfis', 'alunos', 'tipos_documentos'));
+        return view('autenticacao.formulario-requisicao-bibli', compact('usuarios', 'unidades', 'perfis', 'alunos'));
     }
 
-    public function cadastrarDocumento(Request $request)
-    {
-        $id_perfil = $request->default;
 
-        $tipo_documento = $request->documento;
 
-        if ($tipo_documento == 'comprovante') {
-            return redirect()->route('exibirDocumento', compact(  'tipo_documento', 'id_perfil'));
-        }
-        if ($tipo_documento == 'ComprovanteDepositoTrabalhoConclusao') {
-            return redirect()->route('exibirDocumento', compact(  'tipo_documento', 'id_perfil'));
-        }
-
-        return redirect()->route('exibirDocumento', ['tipo_documento' => $tipo_documento, 'id_perfil' => $id_perfil]);//rever logica depois
-    }
-
-    public function exibirDocumento(Request $request)
+    public function createDepositoTCC()
     {
         $usuario = Auth::user();
-        $id_perfil = $request->id_perfil;
-        $perfil = Perfil::find($id_perfil);
         $aluno = $usuario->aluno;
+        $perfil = $usuario->aluno->perfil()->where('valor', true)->first();
         $curso = $perfil->curso;
 
-        $tipo_documento = $request->tipo_documento;
-
-        if ($tipo_documento == 'comprovante') {
-            return view('telas_aluno.cadastrar_solicitacao_nada_consta', compact('usuario', 'aluno', 'curso', 'perfil'));
-        }
-        if ($tipo_documento == 'ComprovanteDepositoTrabalhoConclusao') {
-            return view('telas_aluno.cadastrar_solicitacao_deposito_trabalho', compact('usuario', 'aluno', 'curso', 'perfil'));
-        }
-
-        return view('telas_aluno.cadastrar_documento', ['tipo_documento' => $tipo_documento, 'id_perfil' => $id_perfil]);
-    }
-
-    public function criarDocumento(Request $request)
-    {
-        $idUser = Auth::user()->id;
-        $aluno = Aluno::where('user_id', $idUser)->first();
-        $perfil = Perfil::where('aluno_id', $aluno->id)->first();
-        $unidade = Unidade::where('id', $perfil->unidade_id)->first();
-
-        $ficha = new FichaCatalografica();
-
-        $ficha->autor_nome = $request->autor_nome;
-        $ficha->autor_sobrenome = $request->autor_sobrenome;
-        $ficha->titulo = $request->titulo;
-        $ficha->subtitulo = $request->subtitulo;
-        $ficha->local = $request->local;
-        $ficha->ano = $request->ano;
-        $ficha->folhas = $request->folhas;
-        $ficha->ilustracao = $request->ilustracao;
-        $ficha->tipo_documento_id = $request->tipo_documento;
-        $ficha->inclui_anexo = $request->inclui_anexo;
-        $ficha->inclui_apendice = $request->inclui_apendice;
-        //Anexar arquivo
-        if (($request->hasFile('anexo') && $request->file('anexo')->isValid())) {
-
-            $anexo = $request->anexo->extension();
-            $nomeAnexo = "documento_" . $aluno->cpf . date('Ymd') . date('His') . '.' . $anexo;
-            $ficha->anexo = $nomeAnexo;
-            $request->anexo->storeAs('fichas/', $nomeAnexo);
-            $request->anexo = $nomeAnexo;
-        }
-
-        $ficha->save();
-
-        if ($request->tipo_documento == 2) {
-            $monografia = new Monografia();
-            $monografia->nome_orientador = $request->nome_orientador;
-            $monografia->sobrenome_orientador = $request->sobrenome_orientador;
-            $monografia->nome_coorientador = $request->nome_coorientador;
-            $monografia->sobrenome_coorientador = $request->sobrenome_coorientador;
-            $monografia->nome_segundo_coorientador = $request->nome_segundo_coorientador;
-            $monografia->sobrenome_segundo_coorientador = $request->sobrenome_segundo_coorientador;
-            $monografia->curso = $perfil->default;
-            $monografia->tipo_curso = $request->tipo_curso;
-            $monografia->campus = $unidade->nome;
-            $monografia->ficha_catalografica_id = $ficha->id;
-            $monografia->save();
-        } elseif ($request->tipo_documento == 4) {
-            $tese = new Tese();
-            $tese->nome_orientador = $request->nome_orientador;
-            $tese->sobrenome_orientador = $request->sobrenome_orientador;
-            $tese->nome_coorientador = $request->nome_coorientador;
-            $tese->sobrenome_coorientador = $request->sobrenome_coorientador;
-            $tese->programa = $request->programa;
-            $tese->ficha_catalografica_id = $ficha->id;
-            $tese->save();
-        } elseif ($request->tipo_documento == 3) {
-            $programaEduc = new ProgramaEducacional();
-            $programaEduc->programa = $request->programa;
-            $programaEduc->campus = $unidade->nome;
-            $programaEduc->ficha_catalografica_id = $ficha->id;
-            $programaEduc->nome_orientador = $request->nome_orientador;
-            $programaEduc->sobrenome_orientador = $request->sobrenome_orientador;
-            $programaEduc->nome_coorientador = $request->nome_coorientador;
-            $programaEduc->sobrenome_coorientador = $request->sobrenome_coorientador;
-            $programaEduc->produto = $request->produto;
-            $programaEduc->save();
-        } elseif ($request->tipo_documento == 1) {
-            $dissertacao = new Dissertacao();
-            $dissertacao->nome_orientador = $request->nome_orientador;
-            $dissertacao->sobrenome_orientador = $request->sobrenome_orientador;
-            $dissertacao->nome_coorientador = $request->nome_coorientador;
-            $dissertacao->sobrenome_coorientador = $request->sobrenome_coorientador;
-            $dissertacao->nome_segundo_coorientador = $request->nome_segundo_coorientador;
-            $dissertacao->sobrenome_segundo_coorientador = $request->sobrenome_segundo_coorientador;
-            $dissertacao->campus = $unidade->nome;
-            $dissertacao->programa = $request->programa;
-            $dissertacao->ficha_catalografica_id = $ficha->id;
-            $dissertacao->save();
-        } else {
-            dd($request);
-        }
-
-        $palavra = new PalavraChave();
-        $palavra->palavra = $request->primeira_chave;
-        $palavra->ficha_catalografica_id = $ficha->id;
-        $palavra->save();
-
-        $palavra = new PalavraChave();
-        $palavra->palavra = $request->segunda_chave;
-        $palavra->ficha_catalografica_id = $ficha->id;
-        $palavra->save();
-
-        $palavra = new PalavraChave();
-        $palavra->palavra = $request->terceira_chave;
-        $palavra->ficha_catalografica_id = $ficha->id;
-        $palavra->save();
-
-        if ($request->quarta_chave != null) {
-            $palavra = new PalavraChave();
-            $palavra->palavra = $request->quarta_chave;
-            $palavra->ficha_catalografica_id = $ficha->id;
-            $palavra->save();
-        }
-        if ($request->quinta_chave != null) {
-            $palavra = new PalavraChave();
-            $palavra->palavra = $request->quinta_chave;
-            $palavra->ficha_catalografica_id = $ficha->id;
-            $palavra->save();
-        }
-
-        $requisicao = new Requisicao();
-        $perfil = Perfil::where('id', $request->id_perfil)->first();
-        $requisicao->data_pedido = date('Y-m-d');
-        $requisicao->hora_pedido = date('H:i');
-        $requisicao->perfil_id = $perfil->id;
-        $requisicao->aluno_id = $aluno->id; //necessária adequação com o código de autenticação do usuário do perfil aluno
-        $requisicao->save();
-
-        $documentosRequisitados = new Requisicao_documento();
-        $documentosRequisitados->status_data = date('Y-m-d');
-        $documentosRequisitados->requisicao_id = $requisicao->id;
-        $documentosRequisitados->aluno_id = $perfil->aluno_id;
-        $documentosRequisitados->status = 'Em andamento';
-        $documentosRequisitados->ficha_catalografica_id = $ficha->id;
-        $documentosRequisitados->save();
-
-
-        $bibliotecas = Biblioteca::where('unidade_id', $perfil->unidade_id)->get();
-        foreach ($bibliotecas as $biblioteca) {
-            \Illuminate\Support\Facades\Mail::send(new AlertaFichaMail($biblioteca, $request->user(), $unidade));
-        }
-
-        return redirect(Route('home-aluno'))->with('success', 'Solicitação realizada com sucesso!');
+        return view('telas_aluno.cadastrar_solicitacao_deposito_trabalho', compact('usuario', 'aluno', 'curso', 'perfil'));
     }
 
     public function criarNadaConsta(Request $request)

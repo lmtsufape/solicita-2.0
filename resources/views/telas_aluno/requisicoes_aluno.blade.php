@@ -220,7 +220,7 @@
                                                     </a>
                                                 @else
                                                     <a type="button"
-                                                        href={{ route('gerar-ficha-aluno', \App\Models\Requisicao_documento::where('requisicao_id', $r->id)->first()->id) }}>
+                                                        href={{ route('fichas.gerar', \App\Models\Requisicao_documento::where('requisicao_id', $r->id)->first()->id) }}>
                                                         <button class="btn" style="background-color: transparent">
                                                             <img src="images/botao_dowload_aquivo.svg" height="30px"
                                                                 title="Baixar Ficha">

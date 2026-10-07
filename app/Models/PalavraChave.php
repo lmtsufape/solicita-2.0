@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class PalavraChave extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['palavra', 'ficha_catalografica_id'];
 }

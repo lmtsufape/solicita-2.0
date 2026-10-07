@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 // use SoftDeletes;
@@ -9,7 +10,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Perfil extends Model
 {
     use SoftDeletes;
-    //
+    use HasFactory;
+
     protected $fillable = ['default','situacao', 'valor', 'aluno_id', 'unidade_id', 'curso_id'];
     protected $dates = ['deleted_at'];
 
@@ -23,21 +25,24 @@ class Perfil extends Model
         'Intercâmbio',
     ];
 
-    public function requisicao(){
+    public function requisicao()
+    {
         return $this->hasMany(Requisicao::class);
     }
 
-    public function aluno(){
+    public function aluno()
+    {
         return $this->belongsTo(Aluno::class);
     }
 
-    public function curso(){
+    public function curso()
+    {
         return $this->belongsTo(Curso::class);
     }
 
     public function unidade()
     {
-        return $this->belongsTo(Unidade::class);
+        return $this->belongsTo(Unidade::class, 'unidade_id');
     }
 
 }

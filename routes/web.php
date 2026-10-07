@@ -14,6 +14,7 @@ use App\Http\Controllers\ServidorController;
 use App\Http\Controllers\RequisicaoController;
 use App\Http\Controllers\PerfilAlunoController;
 use App\Http\Controllers\BibliotecarioController;
+use App\Http\Controllers\FichaCatalograficaController;
 use App\Models\Processo;
 
 /*
@@ -107,11 +108,17 @@ Route::middleware('CheckAluno')->group(function(){
     Route::get('/prepara-requisicao-bibli', [RequisicaoController::class, 'preparaNovaRequisicaoBibli'])->name('prepara-requisicao-bibli');
 
     Route::post('/cadastrar-documento-bibli', [RequisicaoController::class, 'cadastrarDocumento'])->name('cadastrarDocumento');
-    Route::get('/documento-bibli', [RequisicaoController::class, 'exibirDocumento'])->name('exibirDocumento');
-    Route::post('/criar-doc-bibli', [RequisicaoController::class, 'criarDocumento'])->name('criarDocumentoBibli')->middleware('throttle:limite_requisicao');
     Route::post('/criar-nada-consta', [RequisicaoController::class, 'criarNadaConsta'])->name('criarNadaConsta')->middleware('throttle:limite_requisicao');
     Route::post('/criar-deposito', [RequisicaoController::class, 'criarDeposito'])->name('criarDeposito')->middleware('throttle:limite_requisicao');
+    Route::get('/ficha-catalografica/create', [FichaCatalograficaController::class, 'create'])->name('fichas.create');
+    Route::post('/ficha-catalografica/store', [FichaCatalograficaController::class, 'store'])->name('fichas.store')->middleware('throttle:limite_requisicao');
+    Route::get('/ficha-catalografica', [FichaCatalograficaController::class, 'index'])->name('fichas.index');
+    Route::get('/ficha-catalografica/{ficha}/edit', [FichaCatalograficaController::class, 'edit'])->name('fichas.edit');
+    Route::put('/ficha-catalografica/{ficha_catalografica_id}', [FichaCatalograficaController::class, 'update'])->name('fichas.update')->middleware('throttle:limite_requisicao');
+    Route::get('/ficha-catalografica/{ficha_catalografica_id}/gerar',[FichaCatalograficaController::class, 'gerarFicha'])->name('fichas.gerar');
 
+
+    Route::get('/deposito/create', [RequisicaoController::class, 'createDepositoTCC'])->name('create-deposito');
     Route::get('/confirmacao-requisicao',function(){
         return view('autenticacao.confirmacao-requisicao');
     })->name('confirmacao-requisicao');
@@ -128,7 +135,6 @@ Route::middleware('CheckAluno')->group(function(){
     Route::post('/alterar-senha',[PerfilAlunoController::class, 'storeAlterarSenha'])->name('alterar-senha');
     Route::get('/formulario-requisicao',[RequisicaoController::class, 'index'])->name('formulario-requisicao');
     Route::post('/formulario-requisicao',[RequisicaoController::class, 'storeRequisicao'])->name('formulario-requisicao-post');
-    Route::get('aluno/{requisicao_id}/gerar-ficha',[BibliotecarioController::class, 'gerarFicha'])->name('gerar-ficha-aluno')->middleware('CheckFichaAluno');
 
     Route::get('/baixar-nada-consta/{requisicao_documento}', [BibliotecarioController::class, 'baixarNadaConsta'])->name('baixar-nada-consta-aluno');
     Route::get('/baixar-deposito/{requisicao_documento}', [BibliotecarioController::class, 'baixarDeposito'])->name('baixar-deposito-aluno');
@@ -160,11 +166,8 @@ Route::group(['middleware'=> ['CheckBibliotecario', 'banned']], function(){
     Route::get('/listar-fichas',[BibliotecarioController::class, 'listarSolicitacoes'])->name('listar-fichas');
     Route::get('/visualizar-ficha/{requisicao_id}',[BibliotecarioController::class, 'visualizarFicha'])->name('visualizar-ficha')->middleware('CheckBibliotecario');
 
-    Route::get('/editar-ficha/{requisicao_id}',[BibliotecarioController::class, 'editarFicha'])->name('editar-ficha')->middleware('CheckBibliotecario');
-    Route::post('/atualizar-ficha',[BibliotecarioController::class, 'atualizarFicha'])->name('atualizar-ficha')->middleware('CheckBibliotecario');
     Route::get('/editar-ficha/{requisicao_id}/rejeitar',[BibliotecarioController::class, 'rejeitarFicha'])->name('rejeitar-ficha')->middleware('CheckBibliotecario');
     Route::post('/editar-ficha/{requisicao_id}/rejeitar-ficha',[BibliotecarioController::class, 'atualizarRejeicao'])->name('atualizar-rejeicao')->middleware('CheckBibliotecario');
-    Route::get('/editar-ficha/{requisicao_id}/gerar-ficha',[BibliotecarioController::class, 'gerarFicha'])->name('gerar-ficha');
     Route::get('/editar-ficha/{requisicao_id}/baixarAnexo',[BibliotecarioController::class, 'baixarAnexo'])->name('baixar-anexo');
     Route::post('/preview/{requisicao_id}', [BibliotecarioController::class, 'previewFicha'])->name('preview');
 

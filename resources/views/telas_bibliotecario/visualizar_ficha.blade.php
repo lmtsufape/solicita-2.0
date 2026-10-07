@@ -71,9 +71,9 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="classificacao">Classificação: <span style="color: red">*</span></label>
-                                <input type="text" class="form-control" id="classificacao" readonly name="classificacao"
-                                       placeholder="Digite a classificação" value="{{ $fichaCatalografica->classificacao  }}" readonly>
+                                <label for="area_conhecimento">Área do Conhecimento: <span style="color: red">*</span></label>
+                                <input type="text" class="form-control" id="area_conhecimento" readonly name="area_conhecimento"
+                                       placeholder="Digite a área do conhecimento" value="{{ $fichaCatalografica->area_conhecimento  }}" readonly>
                             </div>
                         </div>
                     </div>

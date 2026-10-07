@@ -122,7 +122,7 @@
         }
 
         .search-btn {
-           
+
             background-color: var(--primary-color);
             color: white;
         }
@@ -401,9 +401,6 @@
                                                             </div>
                                                         </div>
                                                 @else
-                                                    <a class="btn" href="{{ route('editar-ficha', $requisicao->id) }}">
-                                                        <img src="images/botao_editar.svg" height="30px" title="Botão de Editar - Edição permitida">
-                                                    </a>
                                                     <a class="btn" href="{{ route('visualizar-ficha', $requisicao->id) }}">
                                                         <img src="images/botao_visualizar.svg" height="30px" title="Botão de Visualizar Ficha">
                                                     </a>
