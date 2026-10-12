@@ -171,11 +171,10 @@ class FichaCatalograficaController extends Controller
      */
     public function edit(FichaCatalografica $ficha)
     {
-        $usuario = Auth::user();
         $tipos_fichas_catalograficas = TipoFichaCatalografica::whereIn('slug', ['dissertacao', 'monografia'])->get();
-        $ficha->load(['tipoFichaCatalografica', 'dissertacao', 'monografia', 'palavrasChave']);
-        $aluno = $usuario->aluno;
-        $perfil = $usuario->aluno->perfil()->where('valor', true)->first();
+        $ficha->load(['tipoFichaCatalografica', 'dissertacao', 'monografia', 'palavrasChave', 'aluno']);
+        $aluno = $ficha->aluno;
+        $perfil = $aluno->perfil()->where('valor', true)->first();
         $curso = $perfil->curso;
         return view('fichas_catalograficas.edit', compact('ficha', 'tipos_fichas_catalograficas', 'aluno', 'perfil', 'curso'));
     }
@@ -189,11 +188,18 @@ class FichaCatalograficaController extends Controller
      */
     public function update(UpdateFichaCatalograficaRequest $request, $ficha_catalografica_id)
     {
-        $idUser = Auth::user()->id;
-        $aluno = Aluno::where('user_id', $idUser)->first();
+        $user = Auth::user();
+
+        $ficha = FichaCatalografica::findOrFail($ficha_catalografica_id);
+
+        if ($user->tipo === 'aluno' && $ficha->aluno->user_id !== $user->id) {
+            return back()->with('fail', 'Você não tem permissão para editar esta ficha.');
+        }
+
+        $aluno = $ficha->aluno;
         $perfil = Perfil::where('aluno_id', $aluno->id)->first();
-        $unidade = Unidade::where('id', $perfil->unidade_id)->first();
-        $ficha = $aluno->fichasCatalograficas()->findOrFail($ficha_catalografica_id);
+        $unidade = Unidade::findOrFail($perfil->unidade_id);
+
         $dados = $request->validated();
 
         DB::transaction(function () use ($request, $dados, $aluno, $perfil, $unidade, $ficha) {
@@ -307,6 +313,10 @@ class FichaCatalograficaController extends Controller
 
 
         });
+
+        if(Auth::user()->tipo == 'bibliotecario') {
+            return redirect()->back()->with('success', 'Ficha atualizada com sucesso!');
+        }
 
         return redirect()->route('fichas.index')->with('success', 'Ficha atualizada com sucesso!');
     }

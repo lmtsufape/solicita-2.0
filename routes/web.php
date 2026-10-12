@@ -95,6 +95,10 @@ Route::group(['middleware'=> ['CheckServidor', 'verified', 'banned']], function(
 });
 //----------------------------------------------ALUNO---------------------------------------------------
 // Route::group(['middleware'=> 'verified'], function(){
+Route::get('/ficha-catalografica/{ficha}/edit', [FichaCatalograficaController::class, 'edit'])->name('fichas.edit');
+Route::put('/ficha-catalografica/{ficha_catalografica_id}', [FichaCatalograficaController::class, 'update'])->name('fichas.update')->middleware('throttle:limite_requisicao');
+Route::get('/ficha-catalografica/{ficha_catalografica_id}/gerar',[FichaCatalograficaController::class, 'gerarFicha'])->name('fichas.gerar');
+
 Route::middleware('CheckAluno')->group(function(){
     Route::get('/home-aluno', [AlunoController::class, 'index'])->name('home-aluno');
     Route::get('/home-aluno',[AlunoController::class, 'homeAluno'])->name('home-aluno');
@@ -113,9 +117,6 @@ Route::middleware('CheckAluno')->group(function(){
     Route::get('/ficha-catalografica/create', [FichaCatalograficaController::class, 'create'])->name('fichas.create');
     Route::post('/ficha-catalografica/store', [FichaCatalograficaController::class, 'store'])->name('fichas.store')->middleware('throttle:limite_requisicao');
     Route::get('/ficha-catalografica', [FichaCatalograficaController::class, 'index'])->name('fichas.index');
-    Route::get('/ficha-catalografica/{ficha}/edit', [FichaCatalograficaController::class, 'edit'])->name('fichas.edit');
-    Route::put('/ficha-catalografica/{ficha_catalografica_id}', [FichaCatalograficaController::class, 'update'])->name('fichas.update')->middleware('throttle:limite_requisicao');
-    Route::get('/ficha-catalografica/{ficha_catalografica_id}/gerar',[FichaCatalograficaController::class, 'gerarFicha'])->name('fichas.gerar');
 
 
     Route::get('/deposito/create', [RequisicaoController::class, 'createDepositoTCC'])->name('create-deposito');

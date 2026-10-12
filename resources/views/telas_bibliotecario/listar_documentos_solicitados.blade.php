@@ -674,7 +674,52 @@
                     {{ $requisicoesFichas->appends(request()->except('page'))->links('pagination::bootstrap-4') }}
                 </div>
             </div>
-    </div>
+            <div class="col-md-11 pb-5">
+                <h2 class="tituloListagem">Fichas Catalográficas</h2>
+
+                <table class="table table-borderless shadow table-hover mb-2"
+                        style="border-radius: 1rem; background-color: white; border: none" id="table">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="border-bottom-0 py-3">#</th>
+                            <th scope="col" class="titleColumn border-bottom-0 py-3">Autor</th>
+                            <th scope="col" class="titleColumn text-center border-bottom-0 py-3">Tipo de ficha catalográfica</th>
+                            <th scope="col" class="titleColumn text-center border-bottom-0 py-3">Data de criação</th>
+                            <th scope="col" class="text-center border-bottom-0 py-3">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody class="">
+                        @foreach($fichas as $ficha)
+                            <tr>
+                                <td class="align-middle text-center" scope="row">
+                                    {{$loop->iteration }}
+                                </td>
+                                <td class="align-middle text-center">
+                                    {{$ficha->autor_nome}}
+                                </td>
+                                <td class="align-middle text-center">
+                                    Ficha Catalográfica - {{ $ficha->tipoFichaCatalografica->nome  }}
+                                </td>
+                                <td class="align-middle text-center">
+                                    {{ date('d/m/Y H:i:s', strtotime($ficha->created_at)) }}
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ route('fichas.edit', $ficha->id) }}" class="btn btn-primary">Editar</a>
+                                    <a class="btn btn-success" href="{{ route('fichas.gerar', $ficha->id) }}">
+                                        Baixar ficha
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <div class="pagination d-flex flex-column">
+                    {{ $fichas->appends(request()->except('page'))->links('pagination::bootstrap-4') }}
+                </div>
+            </div>
+
+
+        </div>
     <!-- Link para ícones do Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 @endsection

@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -40,6 +41,10 @@ class RouteServiceProvider extends ServiceProvider
 
             $user = $request->user()?->id ?? $request->ip();
             $rota = $request->route()?->getName() ?? $request->path();
+
+            if(in_array(Auth::user()->tipo, ['bibliotecario'])) {
+                return Limit::none();
+            }
 
             return [
                 Limit::perMinutes(30, 2)->by($user . '|'. $rota)

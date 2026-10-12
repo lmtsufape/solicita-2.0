@@ -123,7 +123,9 @@ class BibliotecarioController extends Controller
             $unidadeBibliotecario = $bibliotecario->biblioteca->unidade_id;
         }
 
-        return view('telas_bibliotecario.listar_documentos_solicitados', compact('requisicoesFichas','idUser', 'bibliotecario', 'stats'));
+        $fichas = FichaCatalografica::with('palavrasChave', 'monografia', 'dissertacao', 'aluno')->orderBy('created_at', 'desc')->paginate(10);
+
+        return view('telas_bibliotecario.listar_documentos_solicitados', compact('requisicoesFichas','idUser', 'bibliotecario', 'stats', 'fichas'));
     }
 
     else if (Auth::user()->tipo === 'analistabibliotecario') {
