@@ -14,7 +14,7 @@ class FichaCatalografica extends Model
 
     protected $fillable = ['cutter', 'area_conhecimento', 'autor_nome', 'autor_sobrenome',
                             'titulo', 'subtitulo', 'local', 'ano', 'folhas', 'inclui_anexo',
-                            'inclui_apendice', 'ilustracao', 'anexo', 'tipo_documento_id',
+                            'inclui_apendice', 'ilustracao', 'anexo', 'tipo_ficha_catalografica_id',
                             'aluno_id', 'nome_orientador', 'sobrenome_orientador', 'nome_coorientador', 'sobrenome_coorientador',
                             'nome_segundo_coorientador', 'sobrenome_segundo_coorientador'];
 
@@ -42,8 +42,8 @@ class FichaCatalografica extends Model
         return $this->belongsTo(Aluno::class, 'aluno_id');
     }
 
-    public function tipo(){
-        return $this->belongsTo(TipoDocumento::class, 'tipo_documento_id');
+    public function tipoFichaCatalografica(){
+        return $this->belongsTo(TipoFichaCatalografica::class, 'tipo_ficha_catalografica_id');
     }
 
     /**

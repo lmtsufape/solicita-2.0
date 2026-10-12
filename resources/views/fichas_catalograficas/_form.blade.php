@@ -9,39 +9,39 @@
     <div class="row">
         <div class="col-md-12 py-2">
             <div class="form-group">
-                <label for="tipo_documento" class="form-label">
+                <label for="tipo_ficha_catalografica_id" class="form-label">
                     Tipo de Ficha Catalográfica:
                     <span style="color: red">*</span>
                 </label>
 
                 <select
-                    class="form-control @error('tipo_documento') is-invalid @enderror"
-                    name="tipo_documento"
-                    id="tipo_documento"
+                    class="form-control @error('tipo_ficha_catalografica_id') is-invalid @enderror"
+                    name="tipo_ficha_catalografica_id"
+                    id="tipo_ficha_catalografica_id"
                     required
                 >
                     <option
                         value=""
                         disabled
-                        @if (old('tipo_documento', '') == '') selected @endif
+                        @if (old('tipo_ficha_catalografica_id', '') == '') selected @endif
                     >
-                        Selecione o tipo de documento
+                        Selecione o tipo de ficha catalográfica
                     </option>
 
-                    @foreach ($tipos_documentos as $tipo)
+                    @foreach ($tipos_fichas_catalograficas as $tipo)
                         @if (in_array((int) $tipo->id, [1, 2], true))
                             <option
                                 value="{{ $tipo->id }}"
-                                data-tipo="{{ $tipo->tipo }}"
-                                @if ((string) old('tipo_documento', $ficha->tipo->id ?? '') === (string) $tipo->id) selected @endif
+                                data-tipo="{{ $tipo->nome }}"
+                                @if ((string) old('tipo_ficha_catalografica_id', $ficha->tipoFichaCatalografica->id ?? '') === (string) $tipo->id) selected @endif
                             >
-                                {{ $tipo->tipo }}
+                                {{ $tipo->nome }}
                             </option>
                         @endif
                     @endforeach
                 </select>
 
-                @error('tipo_documento')
+                @error('tipo_ficha_catalografica_id')
                     <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>
                     </span>
@@ -579,7 +579,7 @@
         <!-- Monografia -->
         <div
             id="campos-monografia"
-            class="col-md-12 campos-documento form-group {{ (string) old('tipo_documento') === '2' ? '' : 'd-none' }}"
+            class="col-md-12 campos-documento form-group {{ (string) old('tipo_ficha_catalografica_id', $ficha->tipo_ficha_catalografica_id ?? '') === '2' ? '' : 'd-none' }}"
         >
             <label for="tipo_curso" class="form-label">
                 Selecione o Tipo do seu Curso:
@@ -592,28 +592,28 @@
                 name="tipo_curso"
                 id="tipo_curso"
                 required
-                @if ((string) old('tipo_documento') !== '2') disabled @endif
+                @if ((string) old('tipo_ficha_catalografica_id', $ficha->tipo_ficha_catalografica_id ?? '') !== '2') disabled @endif
             >
-                <option value="" disabled @if (empty(old('tipo_curso'))) selected @endif>
+                <option value="" disabled @if (empty(old('tipo_curso', $ficha->monografia->tipo_curso ?? ''))) selected @endif>
                     Selecione o tipo do curso
                 </option>
                 <option
                     value="especializacao"
-                    @if (old('tipo_curso') === 'especializacao') selected @endif
+                    @if (old('tipo_curso', $ficha->monografia->tipo_curso ?? '') === 'especializacao') selected @endif
                 >
                     Especialização
                 </option>
 
                 <option
                     value="graduacao"
-                    @if (old('tipo_curso') === 'graduacao') selected @endif
+                    @if (old('tipo_curso', $ficha->monografia->tipo_curso ?? '') === 'graduacao') selected @endif
                 >
                     Graduação
                 </option>
 
                 <option
                     value="mestrado"
-                    @if (old('tipo_curso') === 'mestrado') selected @endif
+                    @if (old('tipo_curso', $ficha->monografia->tipo_curso ?? '') === 'mestrado') selected @endif
                 >
                     Mestrado
                 </option>
@@ -629,7 +629,7 @@
         <!-- Dissertação -->
         <div
             id="campos-dissertacao"
-            class="col-md-12 campos-documento form-group {{ (string) old('tipo_documento') === '1' ? '' : 'd-none' }}"
+            class="col-md-12 campos-documento form-group {{ (string) old('tipo_ficha_catalografica_id', $ficha->tipo_ficha_catalografica_id ?? '') === '1' ? '' : 'd-none' }}"
         >
             <label for="programa" class="form-label">
                 Nome do Programa de Pós-Graduação:
@@ -642,9 +642,9 @@
                 id="programa"
                 name="programa"
                 placeholder="Digite o Nome do Programa"
-                value="{{ old('programa') }}"
+                value="{{ old('programa', $ficha->dissertacao->programa ?? '') }}"
                 required
-                @if ((string) old('tipo_documento') !== '1') disabled @endif
+                @if ((string) old('tipo_ficha_catalografica_id', $ficha->tipo_ficha_catalografica_id ?? '') !== '1') disabled @endif
             >
 
             @error('programa')
@@ -827,7 +827,7 @@
                 '2': '#campos-monografia'
             };
 
-            const bloco = blocos[$('#tipo_documento').val()];
+            const bloco = blocos[$('#tipo_ficha_catalografica_id').val()];
 
             if (bloco) {
                 $(bloco)
@@ -868,7 +868,7 @@
             return mensagem === '';
         }
 
-        $('#tipo_documento').on('change', atualizarCamposDocumento);
+        $('#tipo_ficha_catalografica_id').on('change', atualizarCamposDocumento);
 
         atualizarCamposDocumento();
         verificaCheckBoxConfirma();

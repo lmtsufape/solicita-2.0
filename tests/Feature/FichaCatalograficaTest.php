@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\Aluno;
 use App\Models\FichaCatalografica;
 use App\Models\Perfil;
-use App\Models\TipoDocumento;
+use App\Models\TipoFichaCatalografica;
 use App\Models\Unidade;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -26,14 +26,16 @@ class FichaCatalograficaTest extends TestCase
 
         Storage::fake(config('filesystems.default'));
 
-        TipoDocumento::query()->forceCreate([
+        TipoFichaCatalografica::query()->forceCreate([
             'id' => 1,
-            'tipo' => 'Dissertação',
+            'nome' => 'Dissertação',
+            'slug' => 'dissertacao',
         ]);
 
-        TipoDocumento::query()->forceCreate([
+        TipoFichaCatalografica::query()->forceCreate([
             'id' => 2,
-            'tipo' => 'Monografia',
+            'nome' => 'Monografia',
+            'slug' => 'monografia',
         ]);
     }
 
@@ -68,7 +70,7 @@ class FichaCatalograficaTest extends TestCase
     private function dadosBase(): array
     {
         return [
-            'tipo_documento' => 2,
+            'tipo_ficha_catalografica_id' => 2,
             'autor_nome' => 'João',
             'autor_sobrenome' => 'Silva',
             'cutter' => 'S586',
@@ -115,7 +117,7 @@ class FichaCatalograficaTest extends TestCase
 
         $this->assertDatabaseHas('ficha_catalograficas', [
             'aluno_id' => $contexto['aluno']->id,
-            'tipo_documento_id' => 2,
+            'tipo_ficha_catalografica_id' => 2,
             'autor_nome' => 'João',
             'autor_sobrenome' => 'Silva',
             'titulo' => 'Sistema de Gestão Acadêmica',
@@ -153,7 +155,7 @@ class FichaCatalograficaTest extends TestCase
         $contexto = $this->criarAluno();
 
         $dados = $this->dadosBase();
-        $dados['tipo_documento'] = 1;
+        $dados['tipo_ficha_catalografica_id'] = 1;
         $dados['programa'] = 'Mestrado em Ciência da Computação';
 
         $response = $this
@@ -168,7 +170,7 @@ class FichaCatalograficaTest extends TestCase
             $contexto['aluno']->id
         )->firstOrFail();
 
-        $this->assertEquals(1, (int) $ficha->tipo_documento_id);
+        $this->assertEquals(1, (int) $ficha->tipo_ficha_catalografica_id);
         $this->assertNotNull($ficha->dissertacao);
         $this->assertNull($ficha->monografia);
 
@@ -296,7 +298,7 @@ class FichaCatalograficaTest extends TestCase
         $this->assertNotNull($ficha->monografia);
 
         $dados = $this->dadosBase();
-        $dados['tipo_documento'] = 1;
+        $dados['tipo_ficha_catalografica_id'] = 1;
         $dados['titulo'] = 'Nova Dissertação';
         $dados['programa'] = 'Mestrado em Computação';
 
@@ -309,7 +311,7 @@ class FichaCatalograficaTest extends TestCase
 
         $ficha->refresh();
 
-        $this->assertEquals(1, (int) $ficha->tipo_documento_id);
+        $this->assertEquals(1, (int) $ficha->tipo_ficha_catalografica_id);
         $this->assertEquals('Nova Dissertação', $ficha->titulo);
         $this->assertNull($ficha->monografia);
         $this->assertNotNull($ficha->dissertacao);
@@ -456,18 +458,18 @@ class FichaCatalograficaTest extends TestCase
         $this->assertDatabaseCount('ficha_catalograficas', 0);
     }
 
-    public function test_tipo_documento_e_obrigatorio(): void
+    public function test_tipo_ficha_catalografica_e_obrigatorio(): void
     {
         $contexto = $this->criarAluno();
 
         $dados = $this->dadosBase();
-        $dados['tipo_documento'] = null;
+        $dados['tipo_ficha_catalografica_id'] = null;
 
         $response = $this
             ->actingAs($contexto['user'])
             ->post(route('fichas.store'), $dados);
 
-        $response->assertSessionHasErrors(['tipo_documento']);
+        $response->assertSessionHasErrors(['tipo_ficha_catalografica_id']);
 
         $this->assertDatabaseCount('ficha_catalograficas', 0);
     }

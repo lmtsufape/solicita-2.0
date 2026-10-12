@@ -34,7 +34,7 @@ class MigrarOrientadoresParaFichaCatalografica extends Command
             &$semAlteracoes
         ) {
             FichaCatalografica::query()
-                ->whereIn('tipo_documento_id', [1, 2])
+                ->whereIn('tipo_ficha_catalografica_id', [1, 2])
                 ->with(['monografia', 'dissertacao'])
                 ->chunkById(200, function ($fichas) use (
                     $campos,
@@ -43,7 +43,7 @@ class MigrarOrientadoresParaFichaCatalografica extends Command
                     &$semAlteracoes
                 ) {
                     foreach ($fichas as $ficha) {
-                        $origem = (int) $ficha->tipo_documento_id === 1
+                        $origem = (int) $ficha->tipo_ficha_catalografica_id === 1
                             ? $ficha->dissertacao
                             : $ficha->monografia;
 

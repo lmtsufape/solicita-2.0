@@ -14,6 +14,7 @@
     <form method="POST" enctype="multipart/form-data" id="formRequisicao"
             action="{{ route('fichas.update', ['ficha_catalografica_id' => $ficha->id]) }}">
         @csrf
+        @method('PUT')
         @include('fichas_catalograficas._form', ['ficha' => $ficha])
 
         <div class="row justify-content-between mt-5">

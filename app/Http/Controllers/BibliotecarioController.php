@@ -17,7 +17,6 @@ use App\Models\Requisicao;
 use App\Models\Requisicao_documento;
 use App\Models\Tcc;
 use App\Models\Tese;
-use App\Models\TipoDocumento;
 use App\Models\Unidade;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -28,6 +27,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Mail\AlertaFichaGerada;
 use App\Models\Deposito;
 use App\Models\Retificacao;
+use App\Models\TipoFichaCatalografica;
 use App\Notifications\AlertaDeposito;
 use App\Notifications\AlertaNadaConsta;
 use Carbon\Carbon;
@@ -209,8 +209,8 @@ class BibliotecarioController extends Controller
         $aluno = Aluno::where('id', $requisicao->aluno_id)->first();
         $palavrasChave = PalavraChave::where('ficha_catalografica_id', $requisicao->ficha_catalografica_id)->orderBy('id')->get();
         $fichaCatalografica = FichaCatalografica::where('id', $requisicao->ficha_catalografica_id)->first();
-        $tipo_documento = $fichaCatalografica->tipo_documento_id;
-        $documentoEspecificoNome = TipoDocumento::where('id', $tipo_documento)->first()->tipo;
+        $tipo_ficha_catalografica = $fichaCatalografica->tipo_ficha_catalografica_id;
+        $documentoEspecificoNome = TipoFichaCatalografica::where('id', $tipo_ficha_catalografica)->first()->nome;
         $bibliotecario = Bibliotecario::find($requisicao->bibliotecario_id);
 
         if ($documentoEspecificoNome == 'Monografia')
@@ -578,10 +578,10 @@ class BibliotecarioController extends Controller
         $requisicao->status = 'Em andamento';
         $requisicao->ficha_catalografica_id = $ficha->id;
 
-        $tipo_documento = TipoDocumento::find($ficha->tipo_documento_id)->tipo;
+        $tipo_ficha_catalografica = TipoFichaCatalografica::find($ficha->tipo_ficha_catalografica_id)->nome;
         $userBibliotecario = User::find($bibliotecario->user_id);
 
-        $pdf = Pdf::loadView('telas_bibliotecario.gerar_ficha', compact('ficha', 'palavras', 'tipo_documento', 'documento', 'bibliotecario', 'unidade', 'userBibliotecario'));
+        $pdf = Pdf::loadView('telas_bibliotecario.gerar_ficha', compact('ficha', 'palavras', 'tipo_ficha_catalografica', 'documento', 'bibliotecario', 'unidade', 'userBibliotecario'));
         return $pdf->download($ficha->titulo . "_" . $ficha->autor . strtotime('now') . ".pdf");
 
     }

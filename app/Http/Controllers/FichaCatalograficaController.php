@@ -13,7 +13,7 @@ use App\Models\Perfil;
 use App\Models\ProgramaEducacional;
 use App\Models\Tcc;
 use App\Models\Tese;
-use App\Models\TipoDocumento;
+use App\Models\TipoFichaCatalografica;
 use App\Models\Unidade;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -43,13 +43,13 @@ class FichaCatalograficaController extends Controller
     public function create()
     {
         $usuario = Auth::user();
-        $tipos_documentos = TipoDocumento::whereIn('tipo', ['Dissertacao', 'Monografia'])->get();
+        $tipos_fichas_catalograficas = TipoFichaCatalografica::whereIn('slug', ['dissertacao', 'monografia'])->get();
 
         $aluno = $usuario->aluno;
         $perfil = $usuario->aluno->perfil()->where('valor', true)->first();
         $curso = $perfil->curso;
 
-        return view('fichas_catalograficas.create', compact('usuario', 'aluno', 'curso', 'perfil', 'tipos_documentos'));
+        return view('fichas_catalograficas.create', compact('usuario', 'aluno', 'curso', 'perfil', 'tipos_fichas_catalograficas'));
     }
 
     /**
@@ -89,7 +89,7 @@ class FichaCatalograficaController extends Controller
                 'sobrenome_segundo_coorientador',
             ]);
 
-            $dadosFicha['tipo_documento_id'] = $dados['tipo_documento'];
+            $dadosFicha['tipo_ficha_catalografica_id'] = $dados['tipo_ficha_catalografica_id'];
             $dadosFicha['aluno_id'] = $aluno->id;
 
             if ($request->hasFile('anexo')) {
@@ -108,7 +108,7 @@ class FichaCatalograficaController extends Controller
 
             $ficha = FichaCatalografica::create($dadosFicha);
 
-            match ((int) $dados['tipo_documento']) {
+            match ((int) $dados['tipo_ficha_catalografica_id']) {
                 1 => $ficha->dissertacao()->create([
                     'campus' => $unidade->nome,
                     'programa' => $dados['programa'],
@@ -149,7 +149,7 @@ class FichaCatalograficaController extends Controller
         });
 
 
-        return redirect(Route('home-aluno'))->with('success', 'Solicitação realizada com sucesso!');
+        return redirect(Route('fichas.index'))->with('success', 'Ficha catalográfica criada com sucesso!');
     }
 
     /**
@@ -172,12 +172,12 @@ class FichaCatalograficaController extends Controller
     public function edit(FichaCatalografica $ficha)
     {
         $usuario = Auth::user();
-        $tipos_documentos = TipoDocumento::whereIn('tipo', ['Dissertacao', 'Monografia'])->get();
-        $ficha->load(['tipo', 'dissertacao', 'monografia', 'palavrasChave']);
+        $tipos_fichas_catalograficas = TipoFichaCatalografica::whereIn('slug', ['dissertacao', 'monografia'])->get();
+        $ficha->load(['tipoFichaCatalografica', 'dissertacao', 'monografia', 'palavrasChave']);
         $aluno = $usuario->aluno;
         $perfil = $usuario->aluno->perfil()->where('valor', true)->first();
         $curso = $perfil->curso;
-        return view('fichas_catalograficas.edit', compact('ficha', 'tipos_documentos', 'aluno', 'perfil', 'curso'));
+        return view('fichas_catalograficas.edit', compact('ficha', 'tipos_fichas_catalograficas', 'aluno', 'perfil', 'curso'));
     }
 
     /**
@@ -218,7 +218,7 @@ class FichaCatalograficaController extends Controller
                 'sobrenome_segundo_coorientador',
             ]);
 
-            $dadosFicha['tipo_documento_id'] = $dados['tipo_documento'];
+            $dadosFicha['tipo_ficha_catalografica_id'] = $dados['tipo_ficha_catalografica_id'];
             $dadosFicha['aluno_id'] = $aluno->id;
 
             if ($request->hasFile('anexo')) {
@@ -237,7 +237,7 @@ class FichaCatalograficaController extends Controller
 
             $ficha->update($dadosFicha);
 
-            $tipoDocumento = (int) $dados['tipo_documento'];
+            $tipoDocumento = (int) $dados['tipo_ficha_catalografica_id'];
 
             if ($tipoDocumento !== 1) {
                 $ficha->dissertacao()->delete();
@@ -308,7 +308,7 @@ class FichaCatalograficaController extends Controller
 
         });
 
-        return redirect(Route('listar-fichas'))->with('success', 'Ficha Atualizada com Sucesso!');
+        return redirect()->route('fichas.index')->with('success', 'Ficha atualizada com sucesso!');
     }
 
     /**
@@ -327,20 +327,20 @@ class FichaCatalograficaController extends Controller
 
         $ficha = FichaCatalografica::find($ficha_catalografica_id);
         $palavras = PalavraChave::where('ficha_catalografica_id', $ficha->id)->orderBy('id')->get();
-        $tipo_documento = TipoDocumento::find($ficha->tipo_documento_id)->tipo;
+        $tipo_ficha = TipoFichaCatalografica::find($ficha->tipo_ficha_catalografica_id)->slug;
         $unidade = Unidade::find($ficha->alunos->perfil->unidade_id);
-        if ($tipo_documento == 'Monografia')
+        if ($tipo_ficha == 'monografia')
             $documento = Monografia::where('ficha_catalografica_id', $ficha->id)->first();
-        elseif ($tipo_documento == 'Tese')
+        elseif ($tipo_ficha == 'tese')
             $documento = Tese::where('ficha_catalografica_id', $ficha->id)->first();
-        elseif ($tipo_documento == 'TCC')
+        elseif ($tipo_ficha == 'TCC')
             $documento = Tcc::where('ficha_catalografica_id', $ficha->id)->first();
-        elseif ($tipo_documento == 'ProgramaEduc')
+        elseif ($tipo_ficha == 'programa_educacional')
             $documento = ProgramaEducacional::where('ficha_catalografica_id', $ficha->id)->first();
         else
             $documento = Dissertacao::where('ficha_catalografica_id', $ficha->id)->first();
 
-        $pdf = Pdf::loadView('telas_bibliotecario.gerar_ficha', compact('ficha', 'palavras', 'tipo_documento', 'documento', 'unidade'));
+        $pdf = Pdf::loadView('telas_bibliotecario.gerar_ficha', compact('ficha', 'palavras', 'tipo_ficha', 'documento', 'unidade'));
         return $pdf->download($ficha->titulo . "_" . $ficha->autor . strtotime('now') . ".pdf");
     }
 }

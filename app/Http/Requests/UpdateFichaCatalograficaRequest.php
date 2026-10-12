@@ -83,15 +83,15 @@ class UpdateFichaCatalograficaRequest extends FormRequest
             ],
 
             'ilustracao' => [
-                'nullable',
+                'required',
                 'string',
                 'max:255',
             ],
 
-            'tipo_documento' => [
+            'tipo_ficha_catalografica_id' => [
                 'required',
                 'integer',
-                Rule::exists('tipo_documentos', 'id'),
+                Rule::exists('tipos_fichas_catalograficas', 'id'),
             ],
 
             'inclui_anexo' => [
@@ -153,7 +153,7 @@ class UpdateFichaCatalograficaRequest extends FormRequest
             ],
 
             'tipo_curso' => [
-                'required_if:tipo_documento,2',
+                'required_if:tipo_ficha_catalografica_id,2',
                 'nullable',
                 'string',
                 'max:255',
@@ -162,7 +162,7 @@ class UpdateFichaCatalograficaRequest extends FormRequest
             'programa' => [
                 Rule::requiredIf(function () {
                     return in_array(
-                        (int) $this->input('tipo_documento'),
+                        (int) $this->input('tipo_ficha_catalografica_id'),
                         [1, 3, 4],
                         true
                     );
@@ -173,7 +173,7 @@ class UpdateFichaCatalograficaRequest extends FormRequest
             ],
 
             'produto' => [
-                'required_if:tipo_documento,3',
+                'required_if:tipo_ficha_catalografica_id,3',
                 'nullable',
                 'string',
                 'max:255',
@@ -266,13 +266,13 @@ class UpdateFichaCatalograficaRequest extends FormRequest
             'folhas.min' =>
                 'A quantidade de folhas deve ser maior que zero.',
 
-            'tipo_documento.required' =>
+            'tipo_ficha_catalografica_id.required' =>
                 'Selecione o tipo da ficha catalográfica.',
 
-            'tipo_documento.integer' =>
+            'tipo_ficha_catalografica_id.integer' =>
                 'O tipo selecionado é inválido.',
 
-            'tipo_documento.exists' =>
+            'tipo_ficha_catalografica_id.exists' =>
                 'O tipo selecionado não existe.',
 
             'nome_orientador.required' =>
@@ -350,7 +350,7 @@ class UpdateFichaCatalograficaRequest extends FormRequest
             'ano' => 'ano',
             'folhas' => 'quantidade de folhas',
             'ilustracao' => 'ilustração',
-            'tipo_documento' => 'tipo da ficha catalográfica',
+            'tipo_ficha_catalografica_id' => 'tipo da ficha catalográfica',
             'inclui_anexo' => 'inclusão de anexo',
             'inclui_apendice' => 'inclusão de apêndice',
             'anexo' => 'anexo',

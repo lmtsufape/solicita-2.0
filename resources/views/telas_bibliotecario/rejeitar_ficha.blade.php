@@ -80,7 +80,7 @@
                                 <label for="exampleFormControlInput1">Tipo do documento:</label>
                                 <input type="text" class="form-control" id="titulo" name="titulo"
                                        placeholder="Mensagem explicativa"
-                                       value="{{\App\Models\TipoDocumento::find($ficha->tipo_documento_id)->first()->tipo}}"
+                                       value="{{\App\Models\TipoFichaCatalografica::find($ficha->tipo_ficha_catalografica_id)->first()->nome}}"
                                        disabled>
                             </div>
                         </div>

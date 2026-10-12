@@ -157,7 +157,7 @@
                             color. @elseif($ficha->ilustracao == 'nao_possui')@else: il. @endif</td>
                     </tr>
                     <!-- Parte da Monografia -->
-                    @if($tipo_documento == 'Monografia')
+                    @if($tipo_ficha == 'monografia')
                         <tr>
                             <td class="recuo" style="padding-top: 10px"><span class="recuo">{{substr($ficha->autor_sobrenome, 0, 3)}}</span>Orientador(a): {{ $documento->nome_orientador }} {{ $documento->sobrenome_orientador }}.
                             </td>
@@ -188,7 +188,7 @@
                         </tr>
 
                         <!-- Parte da tese -->
-                    @elseif($tipo_documento == 'Tese')
+                    @elseif($tipo_ficha == 'tese')
                         <tr>
                             <td class="recuo" style="padding-top: 10px"><span class="recuo">{{substr($ficha->autor_sobrenome, 0, 3)}}</span>Orientador(a): {{ $documento->nome_orientador }} {{ $documento->sobrenome_orientador }}.
                             </td>
@@ -207,7 +207,7 @@
                                 {{ $ficha->local }}, BR-PE, {{ $ficha->ano }}.
                             </td>
                         </tr>
-                    @elseif($tipo_documento == 'ProgramaEduc')
+                    @elseif($tipo_ficha == 'programa_educacional')
                         <tr>
                             <td class="recuo" style="padding-top: 10px"><span class="recuo">{{substr($ficha->autor_sobrenome, 0, 3)}}</span>Orientador(a): {{ $documento->nome_orientador }} {{ $documento->sobrenome_orientador }}.
                             </td>
@@ -290,7 +290,7 @@
                     </tr>
 
                     <!-- Palavras chave -->
-                    @if($tipo_documento == 'Monografia')
+                    @if($tipo_ficha == 'monografia')
                         <tr>
                             <td class="recuo" style="padding-top: 10px"><span class="recuo">{{substr($ficha->autor_sobrenome, 0, 3)}}</span>@for ($i = 0; $i < sizeof($palavras); $i++){{ ($i + 1) }}. {{ $palavras[$i]->palavra }}.
                                 @endfor I. {{ $documento->sobrenome_orientador }}, {{ $documento->nome_orientador }}
@@ -317,7 +317,7 @@
 
                         </tr>
 
-                    @elseif($tipo_documento == 'Tese')
+                    @elseif($tipo_ficha == 'tese')
                         <tr>
                             <td class="recuo" style="padding-top: 10px"><span class="recuo">{{substr($ficha->autor_sobrenome, 0, 3)}}</span>@for ($i = 0; $i < sizeof($palavras); $i++){{ ($i + 1) }}. {{ $palavras[$i]->palavra }}.
                                 @endfor I. {{ $documento->sobrenome_orientador }}, {{ $documento->nome_orientador }}
@@ -335,7 +335,7 @@
                                 @endif</td>
 
                         </tr>
-                    @elseif($tipo_documento == 'ProgramaEduc')
+                    @elseif($tipo_ficha == 'programa_educacional')
                         <tr>
                             <td class="recuo" style="padding-top: 10px"><span class="recuo">{{substr($ficha->autor_sobrenome, 0, 3)}}</span>@for ($i = 0; $i < sizeof($palavras); $i++){{ ($i + 1) }}. {{ $palavras[$i]->palavra }}.
                                 @endfor I. {{ $documento->sobrenome_orientador }}, {{ $documento->nome_orientador }}(orient.)
