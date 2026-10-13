@@ -113,7 +113,7 @@ class FichaCatalograficaTest extends TestCase
             ->post(route('fichas.store'), $this->dadosBase());
 
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect(route('home-aluno'));
+        $response->assertRedirect(route('fichas.index'));
 
         $this->assertDatabaseHas('ficha_catalograficas', [
             'aluno_id' => $contexto['aluno']->id,
@@ -163,7 +163,7 @@ class FichaCatalograficaTest extends TestCase
             ->post(route('fichas.store'), $dados);
 
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect(route('home-aluno'));
+        $response->assertRedirect(route('fichas.index'));
 
         $ficha = FichaCatalografica::where(
             'aluno_id',
@@ -194,7 +194,7 @@ class FichaCatalograficaTest extends TestCase
             ->post(route('fichas.store'), $this->dadosBase());
 
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect(route('home-aluno'));
+        $response->assertRedirect(route('fichas.index'));
 
         $ficha = FichaCatalografica::where(
             'aluno_id',
@@ -222,7 +222,7 @@ class FichaCatalograficaTest extends TestCase
             ->post(route('fichas.store'), $dados);
 
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect(route('home-aluno'));
+        $response->assertRedirect(route('fichas.index'));
 
         $ficha = FichaCatalografica::where(
             'aluno_id',
@@ -248,7 +248,7 @@ class FichaCatalograficaTest extends TestCase
             ->post(route('fichas.store'), $this->dadosBase());
 
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect(route('home-aluno'));
+        $response->assertRedirect(route('fichas.index'));
 
         $ficha = FichaCatalografica::where(
             'aluno_id',
@@ -288,7 +288,7 @@ class FichaCatalograficaTest extends TestCase
             ->post(route('fichas.store'), $this->dadosBase());
 
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect(route('home-aluno'));
+        $response->assertRedirect(route('fichas.index'));
 
         $ficha = FichaCatalografica::where(
             'aluno_id',
@@ -331,7 +331,7 @@ class FichaCatalograficaTest extends TestCase
             ->post(route('fichas.store'), $this->dadosBase());
 
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect(route('home-aluno'));
+        $response->assertRedirect(route('fichas.index'));
 
         $ficha = FichaCatalografica::where(
             'aluno_id',
@@ -375,7 +375,7 @@ class FichaCatalograficaTest extends TestCase
             ->post(route('fichas.store'), $this->dadosBase());
 
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect(route('home-aluno'));
+        $response->assertRedirect(route('fichas.index'));
 
         $ficha = FichaCatalografica::where(
             'aluno_id',
@@ -397,7 +397,7 @@ class FichaCatalograficaTest extends TestCase
             ->post(route('fichas.store'), $this->dadosBase());
 
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect(route('home-aluno'));
+        $response->assertRedirect(route('fichas.index'));
 
         $ficha = FichaCatalografica::where(
             'aluno_id',
@@ -508,12 +508,9 @@ class FichaCatalograficaTest extends TestCase
         $primeiro = $this->criarAluno();
         $segundo = $this->criarAluno();
 
-        $response = $this
+        $this
             ->actingAs($segundo['user'])
             ->post(route('fichas.store'), $this->dadosBase());
-
-        $response->assertSessionHasNoErrors();
-        $response->assertRedirect(route('home-aluno'));
 
         $ficha = FichaCatalografica::where(
             'aluno_id',
@@ -529,7 +526,12 @@ class FichaCatalograficaTest extends TestCase
             ->actingAs($primeiro['user'])
             ->put(route('fichas.update', $ficha->id), $dados);
 
-        $response->assertNotFound();
+        $response->assertRedirect(url()->previous());
+
+        $response->assertSessionHas(
+            'fail',
+            'Você não tem permissão para editar esta ficha.'
+        );
 
         $ficha->refresh();
 
