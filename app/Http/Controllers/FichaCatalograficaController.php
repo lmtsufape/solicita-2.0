@@ -338,7 +338,7 @@ class FichaCatalograficaController extends Controller
         $ficha = FichaCatalografica::find($ficha_catalografica_id);
         $palavras = PalavraChave::where('ficha_catalografica_id', $ficha->id)->orderBy('id')->get();
         $tipo_ficha = TipoFichaCatalografica::find($ficha->tipo_ficha_catalografica_id)->slug;
-        $unidade = Unidade::find($ficha->alunos->perfil->unidade_id);
+        $unidade = Unidade::find($ficha->aluno->perfil->unidade_id);
         if ($tipo_ficha == 'monografia')
             $documento = Monografia::where('ficha_catalografica_id', $ficha->id)->first();
         elseif ($tipo_ficha == 'tese')
