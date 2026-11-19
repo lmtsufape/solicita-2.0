@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\AreaConhecimento;
 use App\Models\FichaCatalografica;
+use App\Models\TipoFichaCatalografica;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -10,7 +12,7 @@ class UpdateFichaCatalograficaRequest extends FormRequest
 {
     public function authorize(): bool
     {
-       return true;
+        return true;
     }
 
     protected function prepareForValidation(): void
@@ -21,10 +23,27 @@ class UpdateFichaCatalograficaRequest extends FormRequest
         ]);
     }
 
+    private function tipoSlug(): ?string
+    {
+        $tipoId = $this->input('tipo_ficha_catalografica_id');
+
+        if (empty($tipoId)) {
+            return null;
+        }
+
+        return TipoFichaCatalografica::where('id', $tipoId)->value('slug');
+    }
+
     public function rules(): array
     {
         $ficha = FichaCatalografica::findOrFail(
             $this->route('ficha_catalografica_id')
+        );
+
+        $slug = $this->tipoSlug();
+        $codigosArea = array_map(
+            fn (AreaConhecimento $area) => $area->value,
+            AreaConhecimento::cases()
         );
 
         return [
@@ -49,7 +68,7 @@ class UpdateFichaCatalograficaRequest extends FormRequest
             'area_conhecimento' => [
                 'required',
                 'string',
-                'max:255',
+                Rule::in($codigosArea),
             ],
 
             'titulo' => [
@@ -85,7 +104,7 @@ class UpdateFichaCatalograficaRequest extends FormRequest
             'ilustracao' => [
                 'required',
                 'string',
-                'max:255',
+                Rule::in(['colorido', 'preto_branco', 'nao_possui']),
             ],
 
             'tipo_ficha_catalografica_id' => [
@@ -153,27 +172,21 @@ class UpdateFichaCatalograficaRequest extends FormRequest
             ],
 
             'tipo_curso' => [
-                'required_if:tipo_ficha_catalografica_id,2',
+                Rule::requiredIf($slug === 'monografia'),
                 'nullable',
                 'string',
-                'max:255',
+                Rule::in(['especializacao', 'graduacao', 'mestrado']),
             ],
 
             'programa' => [
-                Rule::requiredIf(function () {
-                    return in_array(
-                        (int) $this->input('tipo_ficha_catalografica_id'),
-                        [1, 3, 4],
-                        true
-                    );
-                }),
+                Rule::requiredIf(in_array($slug, ['dissertacao', 'produto-educacional', 'programa_educacional', 'tese'], true)),
                 'nullable',
                 'string',
                 'max:255',
             ],
 
             'produto' => [
-                'required_if:tipo_ficha_catalografica_id,3',
+                Rule::requiredIf(in_array($slug, ['produto-educacional', 'programa_educacional'], true)),
                 'nullable',
                 'string',
                 'max:255',
@@ -237,10 +250,16 @@ class UpdateFichaCatalograficaRequest extends FormRequest
                 'O sobrenome do autor deve ser um texto.',
 
             'cutter.required' =>
-                'O Cutter é obrigatório.',
+                'O Código de Cutter é obrigatório.',
 
             'area_conhecimento.required' =>
-                'A área de conhecimento é obrigatória.',
+                'A Área do Conhecimento é obrigatória.',
+
+            'area_conhecimento.in' =>
+                'Selecione uma Área do Conhecimento válida.',
+
+            'ilustracao.in' =>
+                'Selecione uma opção de ilustração válida.',
 
             'titulo.required' =>
                 'O título é obrigatório.',
@@ -293,14 +312,17 @@ class UpdateFichaCatalograficaRequest extends FormRequest
             'sobrenome_segundo_coorientador.required_with' =>
                 'Informe o sobrenome do segundo coorientador.',
 
-            'tipo_curso.required_if' =>
+            'tipo_curso.required' =>
                 'O tipo de curso é obrigatório para monografia.',
+
+            'tipo_curso.in' =>
+                'Selecione um tipo de curso válido.',
 
             'programa.required' =>
                 'O programa é obrigatório para este tipo de ficha.',
 
-            'produto.required_if' =>
-                'O produto é obrigatório para Programa Educacional.',
+            'produto.required' =>
+                'O tipo do produto é obrigatório para Produto Educacional.',
 
             'anexo.required' =>
                 'O anexo é obrigatório.',

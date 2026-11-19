@@ -72,8 +72,10 @@
 
                             <div class="form-group">
                                 <label for="area_conhecimento">Área do Conhecimento: <span style="color: red">*</span></label>
-                                <input type="text" class="form-control" id="area_conhecimento" readonly name="area_conhecimento"
-                                       placeholder="Digite a área do conhecimento" value="{{ $fichaCatalografica->area_conhecimento  }}" readonly>
+                                <input type="text" class="form-control" id="area_conhecimento_descricao" readonly
+                                       placeholder="Área do conhecimento"
+                                       value="{{ \App\Enums\AreaConhecimento::fromCodigoCDD($fichaCatalografica->area_conhecimento)?->descricaoCompleta() ?? $fichaCatalografica->area_conhecimento }}">
+                                <input type="hidden" name="area_conhecimento" value="{{ $fichaCatalografica->area_conhecimento }}">
                             </div>
                         </div>
                     </div>
@@ -209,7 +211,7 @@
                                 <label for="nome_orientador">Nome do Orientador: <span
                                         style="color: red">*</span></label>
                                 <input type="text" class="form-control" id="nome_orientador" readonly name="nome_orientador"
-                                       placeholder="Digite o nome do orientador" value="{{$documento->nome_orientador}}"
+                                       placeholder="Digite o nome do orientador" value="{{ $fichaCatalografica->nome_orientador ?? $documento->nome_orientador }}"
                                        required>
                             </div>
 
@@ -219,21 +221,21 @@
                                 <input type="text" class="form-control" id="sobrenome_orientador"
                                        readonly name="sobrenome_orientador"
                                        placeholder="Digite o Sobrenome do orientador"
-                                       value="{{$documento->sobrenome_orientador}}" required>
+                                       value="{{ $fichaCatalografica->sobrenome_orientador ?? $documento->sobrenome_orientador }}" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="nome_coorientador">Nome do Coorientador: </label>
                                 <input type="text" class="form-control" id="nome_coorientador"
                                        placeholder="Digite o Nome do Coorientador"
-                                       value="{{$documento->nome_coorientador}}" readonly name="nome_coorientador">
+                                       value="{{ $fichaCatalografica->nome_coorientador ?? $documento->nome_coorientador }}" readonly name="nome_coorientador">
                             </div>
 
                             <div class="form-group">
                                 <label for="sobrenome_coorientador">Sobrenome do Coorientador: </label>
                                 <input type="text" class="form-control" id="sobrenome_coorientador"
                                        placeholder="Digite o Sobrenome do Coorientador"
-                                       value="{{$documento->sobrenome_coorientador}}"
+                                       value="{{ $fichaCatalografica->sobrenome_coorientador ?? $documento->sobrenome_coorientador }}"
                                        readonly name="sobrenome_coorientador">
                             </div>
 
@@ -241,14 +243,14 @@
                                 <label for="nome_segundo_coorientador">Nome do Segundo Coorientador: </label>
                                 <input type="text" class="form-control" id="nome_segundo_coorientador"
                                        placeholder="Digite o Nome do Segundo Coorientador"
-                                       value="{{$documento->nome_segundo_coorientador}}" readonly name="nome_segundo_coorientador">
+                                       value="{{ $fichaCatalografica->nome_segundo_coorientador ?? $documento->nome_segundo_coorientador }}" readonly name="nome_segundo_coorientador">
                             </div>
 
                             <div class="form-group">
                                 <label for="sobrenome_segundo_coorientador">Sobrenome do Segundo Coorientador: </label>
                                 <input type="text" class="form-control" id="sobrenome_segundo_coorientador" readonly
                                        placeholder="Digite o Sobrenome do Segundo Coorientador"
-                                       value="{{$documento->sobrenome_segundo_coorientador}}"
+                                       value="{{ $fichaCatalografica->sobrenome_segundo_coorientador ?? $documento->sobrenome_segundo_coorientador }}"
                                        name="sobrenome_segundo_coorientador">
                             </div>
 
@@ -317,7 +319,7 @@
                                         style="color: red">*</span></label>
                                 <input type="text" class="form-control" id="nome_orientador" readonly name="nome_orientador"
                                        placeholder="Digite o Nome do Orientador"
-                                       value="{{$documento->nome_orientador}}">
+                                       value="{{ $fichaCatalografica->nome_orientador ?? $documento->nome_orientador }}">
                             </div>
 
                             <div class="form-group">
@@ -326,21 +328,21 @@
                                 <input type="text" class="form-control" id="sobrenome_orientador"
                                        readonly name="sobrenome_orientador"
                                        placeholder="Digite o Sobrenome do orientador"
-                                       value="{{$documento->sobrenome_orientador}}" required>
+                                       value="{{ $fichaCatalografica->sobrenome_orientador ?? $documento->sobrenome_orientador }}" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="nome_coorientador">Nome do coorientador:</label>
                                 <input type="text" class="form-control" id="nome_coorientador" readonly name="nome_coorientador"
                                        placeholder="Digite o Nome do Coorientador"
-                                       value="{{$documento->nome_coorientador}}">
+                                       value="{{ $fichaCatalografica->nome_coorientador ?? $documento->nome_coorientador }}">
                             </div>
 
                             <div class="form-group">
                                 <label for="sobrenome_coorientador">Sobrenome do Coorientador: </label>
                                 <input type="text" class="form-control" id="sobrenome_coorientador"
                                        placeholder="Digite o Sobrenome do Coorientador"
-                                       value="{{$documento->sobrenome_coorientador}}"
+                                       value="{{ $fichaCatalografica->sobrenome_coorientador ?? $documento->sobrenome_coorientador }}"
                                        readonly name="sobrenome_coorientador">
                             </div>
 
@@ -414,7 +416,7 @@
                                             style="color: red">*</span></label>
                                     <input type="text" class="form-control" id="nome_orientador" readonly name="nome_orientador"
                                            placeholder="Digite o Nome do Orientador"
-                                           value="{{$documento->nome_orientador}}" required>
+                                           value="{{ $fichaCatalografica->nome_orientador ?? $documento->nome_orientador }}" required>
                                 </div>
 
                                 <div class="form-group">
@@ -422,14 +424,14 @@
                                     <input type="text" class="form-control" id="sobrenome_orientador"
                                            readonly name="sobrenome_orientador"
                                            placeholder="Digite o Sobrenome do Orientador"
-                                           value="{{$documento->sobrenome_orientador}}" required>
+                                           value="{{ $fichaCatalografica->sobrenome_orientador ?? $documento->sobrenome_orientador }}" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="nome_coorientador">Nome do Coorientador: </label>
                                     <input type="text" class="form-control" id="nome_coorientador"
                                            placeholder="Digite o Nome do Coorientador"
-                                           value="{{$documento->nome_coorientador}}"
+                                           value="{{ $fichaCatalografica->nome_coorientador ?? $documento->nome_coorientador }}"
                                            readonly name="nome_coorientador">
                                 </div>
 
@@ -437,7 +439,7 @@
                                     <label for="sobrenome_coorientador">Sobrenome do Coorientador: </label>
                                     <input type="text" class="form-control" id="sobrenome_coorientador"
                                            placeholder="Digite o Sobrenome do Coorientador"
-                                           value="{{$documento->sobrenome_coorientador}}"
+                                           value="{{ $fichaCatalografica->sobrenome_coorientador ?? $documento->sobrenome_coorientador }}"
                                            readonly name="sobrenome_coorientador">
                                 </div>
 
@@ -445,14 +447,14 @@
                                     <label for="nome_segundo_coorientador">Nome do Segundo Coorientador: </label>
                                     <input type="text" class="form-control" id="nome_segundo_coorientador"
                                            placeholder="Digite o Nome do Segundo Coorientador"
-                                           value="{{$documento->nome_segundo_coorientador}}" readonly name="nome_segundo_coorientador">
+                                           value="{{ $fichaCatalografica->nome_segundo_coorientador ?? $documento->nome_segundo_coorientador }}" readonly name="nome_segundo_coorientador">
                                 </div>
 
                                 <div class="form-group">
                                     <label for="sobrenome_segundo_coorientador">Sobrenome do Segundo Coorientador: </label>
                                     <input type="text" class="form-control" id="sobrenome_segundo_coorientador" readonly
                                            placeholder="Digite o Sobrenome do Segundo Coorientador"
-                                           value="{{$documento->sobrenome_segundo_coorientador}}"
+                                           value="{{ $fichaCatalografica->sobrenome_segundo_coorientador ?? $documento->sobrenome_segundo_coorientador }}"
                                            name="sobrenome_segundo_coorientador">
                                 </div>
 

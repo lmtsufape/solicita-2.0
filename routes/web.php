@@ -95,9 +95,11 @@ Route::group(['middleware'=> ['CheckServidor', 'verified', 'banned']], function(
 });
 //----------------------------------------------ALUNO---------------------------------------------------
 // Route::group(['middleware'=> 'verified'], function(){
-Route::get('/ficha-catalografica/{ficha}/edit', [FichaCatalograficaController::class, 'edit'])->name('fichas.edit');
-Route::put('/ficha-catalografica/{ficha_catalografica_id}', [FichaCatalograficaController::class, 'update'])->name('fichas.update')->middleware('throttle:limite_requisicao');
-Route::get('/ficha-catalografica/{ficha_catalografica_id}/gerar',[FichaCatalograficaController::class, 'gerarFicha'])->name('fichas.gerar');
+Route::middleware(['auth', 'banned'])->group(function(){
+    Route::get('/ficha-catalografica/{ficha}/edit', [FichaCatalograficaController::class, 'edit'])->name('fichas.edit');
+    Route::put('/ficha-catalografica/{ficha_catalografica_id}', [FichaCatalograficaController::class, 'update'])->name('fichas.update')->middleware('throttle:limite_requisicao');
+    Route::get('/ficha-catalografica/{ficha_catalografica_id}/gerar',[FichaCatalograficaController::class, 'gerarFicha'])->name('fichas.gerar');
+});
 
 Route::middleware('CheckAluno')->group(function(){
     Route::get('/home-aluno', [AlunoController::class, 'index'])->name('home-aluno');

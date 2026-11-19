@@ -10,7 +10,7 @@ class MigrarOrientadoresParaFichaCatalografica extends Command
 {
     protected $signature = 'fichas:migrar-orientadores';
 
-    protected $description = 'Copia os dados de orientação das monografias e dissertações para as fichas catalográficas';
+    protected $description = 'Copia os dados de orientação das monografias, dissertações, teses e produtos educacionais para as fichas catalográficas';
 
     public function handle()
     {
@@ -34,8 +34,8 @@ class MigrarOrientadoresParaFichaCatalografica extends Command
             &$semAlteracoes
         ) {
             FichaCatalografica::query()
-                ->whereIn('tipo_ficha_catalografica_id', [1, 2])
-                ->with(['monografia', 'dissertacao'])
+                ->whereIn('tipo_ficha_catalografica_id', [1, 2, 3, 4])
+                ->with(['monografia', 'dissertacao', 'programaEducacional', 'tese', 'tipoFichaCatalografica'])
                 ->chunkById(200, function ($fichas) use (
                     $campos,
                     &$atualizadas,
@@ -43,9 +43,19 @@ class MigrarOrientadoresParaFichaCatalografica extends Command
                     &$semAlteracoes
                 ) {
                     foreach ($fichas as $ficha) {
-                        $origem = (int) $ficha->tipo_ficha_catalografica_id === 1
-                            ? $ficha->dissertacao
-                            : $ficha->monografia;
+                        $origem = match ($ficha->tipoFichaCatalografica?->slug) {
+                            'dissertacao' => $ficha->dissertacao,
+                            'monografia' => $ficha->monografia,
+                            'produto-educacional', 'programa_educacional' => $ficha->programaEducacional,
+                            'tese' => $ficha->tese,
+                            default => match ((int) $ficha->tipo_ficha_catalografica_id) {
+                                1 => $ficha->dissertacao,
+                                2 => $ficha->monografia,
+                                3 => $ficha->programaEducacional,
+                                4 => $ficha->tese,
+                                default => null,
+                            },
+                        };
 
                         if (!$origem) {
                             $semOrigem++;

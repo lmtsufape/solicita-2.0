@@ -38,6 +38,10 @@ class FichaCatalografica extends Model
         return $this->hasOne(Dissertacao::class);
     }
 
+    public function programaEducacional(){
+        return $this->hasOne(ProgramaEducacional::class);
+    }
+
     public function aluno(){
         return $this->belongsTo(Aluno::class, 'aluno_id');
     }

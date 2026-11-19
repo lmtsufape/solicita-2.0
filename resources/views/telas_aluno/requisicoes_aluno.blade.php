@@ -79,13 +79,13 @@
                                                 @foreach ($fichas as $ficha)
                                                     @if ($ficha->id == $rd->ficha_catalografica_id)
                                                         <li>
-                                                            Ficha Catalográfica - @if ($ficha->tipo_documento_id == 1)
+                                                            Ficha Catalográfica - @if ($ficha->tipo_ficha_catalografica_id == 1)
                                                                 Dissertação
-                                                            @elseif ($ficha->tipo_documento_id == 2)
+                                                            @elseif ($ficha->tipo_ficha_catalografica_id == 2)
                                                                 Monografia
-                                                            @elseif ($ficha->tipo_documento_id == 3)
+                                                            @elseif ($ficha->tipo_ficha_catalografica_id == 3)
                                                                 Produto Educacional
-                                                            @elseif ($ficha->tipo_documento_id == 4)
+                                                            @elseif ($ficha->tipo_ficha_catalografica_id == 4)
                                                                 Tese
                                                             @endif
                                                         </li>
@@ -218,9 +218,9 @@
                                                         <img src="images/botao_dowload_aquivo.svg" height="30px"
                                                             title="Baixar comprovante">
                                                     </a>
-                                                @else
+                                                @elseif ($r->requisicao_documento->first()->ficha_catalografica_id != null)
                                                     <a type="button"
-                                                        href={{ route('fichas.gerar', \App\Models\Requisicao_documento::where('requisicao_id', $r->id)->first()->id) }}>
+                                                        href="{{ route('fichas.gerar', $r->requisicao_documento->first()->ficha_catalografica_id) }}">
                                                         <button class="btn" style="background-color: transparent">
                                                             <img src="images/botao_dowload_aquivo.svg" height="30px"
                                                                 title="Baixar Ficha">
