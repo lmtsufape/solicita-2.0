@@ -80,7 +80,7 @@
                                 <label for="exampleFormControlInput1">Tipo do documento:</label>
                                 <input type="text" class="form-control" id="titulo" name="titulo"
                                        placeholder="Mensagem explicativa"
-                                       value="{{\App\Models\TipoFichaCatalografica::find($ficha->tipo_ficha_catalografica_id)->first()->nome}}"
+                                       value="{{\App\Models\TipoFichaCatalografica::find($ficha->tipo_ficha_catalografica_id)?->nome}}"
                                        disabled>
                             </div>
                         </div>
@@ -109,7 +109,7 @@
                 <div class="row justify-content-between mt-4">
                     <div class="col-md-6">
                         <a type="button" class="btn btn-secondary" style="background-color: var(--padrao); border-radius: 0.5rem; color: white;"
-                           href="{{ route('editar-ficha', $requisicao->id) }}">Voltar</a>
+                           href="{{ route('listar-fichas') }}">Voltar</a>
                     </div>
                     <div class="col-md-6 text-right">
                         <button class="btn btn-danger" style="background-color: var(--destaque); border-radius: 0.5rem; color: white;">Rejeitar</button>

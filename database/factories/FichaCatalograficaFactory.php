@@ -28,12 +28,12 @@ class FichaCatalograficaFactory extends Factory
                 $this->faker->numberBetween(100, 999)
             ),
 
-            'area_conhecimento' => $this->faker->randomElement([
-                'Ciência da Computação',
-                'Educação',
-                'Matemática',
-                'Psicologia',
-            ]),
+            'area_conhecimento' => $this->faker->randomElement(
+                array_map(
+                    fn (\App\Enums\AreaConhecimento $area) => $area->value,
+                    \App\Enums\AreaConhecimento::cases()
+                )
+            ),
 
             'titulo' => $this->faker->sentence(5),
 
@@ -46,8 +46,9 @@ class FichaCatalograficaFactory extends Factory
             'folhas' => $this->faker->numberBetween(30, 200),
 
             'ilustracao' => $this->faker->randomElement([
-                'Sim',
-                'Não',
+                'colorido',
+                'preto_branco',
+                'nao_possui',
             ]),
 
             'anexo' => $this->faker->uuid . '.pdf',

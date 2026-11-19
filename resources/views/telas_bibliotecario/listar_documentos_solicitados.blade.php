@@ -348,11 +348,7 @@
                                     </td>
                                     <td class="align-middle text-center">
                                         Ficha Catalográfica -
-                                        @if ($requisicao->fichaCatalografica->tipo_documento_id == 2)Monografia
-                                        @elseif ($requisicao->fichaCatalografica->tipo_documento_id == 4)Tese
-                                        @elseif ($requisicao->fichaCatalografica->tipo_documento_id == 3)Produto Educacional
-                                        @elseif ($requisicao->fichaCatalografica->tipo_documento_id == 1)Dissertação
-                                        @endif
+                                        {{ $requisicao->fichaCatalografica->tipoFichaCatalografica?->nome ?? '' }}
                                     </td>
                                     <td class="align-middle text-center">
                                         {{ date('d/m/Y H:i:s', strtotime($requisicao->fichaCatalografica->created_at)) }}
@@ -394,7 +390,7 @@
                                                                         Alguém já está editando esta ficha. O que você deseja fazer?
                                                                     </div>
                                                                     <div class="modal-footer">
-                                                                        <a href="{{ route('editar-ficha', $requisicao->id) }}" class="btn btn-primary">Editar</a>
+                                                                        <a href="{{ route('fichas.edit', $requisicao->ficha_catalografica_id) }}" class="btn btn-primary">Editar</a>
                                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                                                                     </div>
                                                                 </div>
@@ -674,11 +670,12 @@
                     {{ $requisicoesFichas->appends(request()->except('page'))->links('pagination::bootstrap-4') }}
                 </div>
             </div>
+            @if(isset($fichas))
             <div class="col-md-11 pb-5">
                 <h2 class="tituloListagem">Fichas Catalográficas</h2>
 
                 <table class="table table-borderless shadow table-hover mb-2"
-                        style="border-radius: 1rem; background-color: white; border: none" id="table">
+                        style="border-radius: 1rem; background-color: white; border: none" id="table-fichas">
                     <thead>
                         <tr>
                             <th scope="col" class="border-bottom-0 py-3">#</th>
@@ -692,13 +689,13 @@
                         @foreach($fichas as $ficha)
                             <tr>
                                 <td class="align-middle text-center" scope="row">
-                                    {{$loop->iteration }}
+                                    {{$loop->iteration + (($fichas->firstItem() ?? 1) - 1) }}
                                 </td>
                                 <td class="align-middle text-center">
                                     {{$ficha->autor_nome}}
                                 </td>
                                 <td class="align-middle text-center">
-                                    Ficha Catalográfica - {{ $ficha->tipoFichaCatalografica->nome  }}
+                                    Ficha Catalográfica - {{ $ficha->tipoFichaCatalografica?->nome ?? '-' }}
                                 </td>
                                 <td class="align-middle text-center">
                                     {{ date('d/m/Y H:i:s', strtotime($ficha->created_at)) }}
@@ -714,9 +711,10 @@
                     </tbody>
                 </table>
                 <div class="pagination d-flex flex-column">
-                    {{ $fichas->appends(request()->except('page'))->links('pagination::bootstrap-4') }}
+                    {{ $fichas->appends(request()->except('fichas_page'))->links('pagination::bootstrap-4') }}
                 </div>
             </div>
+            @endif
 
 
         </div>

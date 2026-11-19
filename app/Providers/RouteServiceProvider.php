@@ -42,7 +42,7 @@ class RouteServiceProvider extends ServiceProvider
             $user = $request->user()?->id ?? $request->ip();
             $rota = $request->route()?->getName() ?? $request->path();
 
-            if(in_array(Auth::user()->tipo, ['bibliotecario'])) {
+            if (in_array($request->user()?->tipo, ['bibliotecario'], true)) {
                 return Limit::none();
             }
 

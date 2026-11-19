@@ -1,3 +1,40 @@
+@php
+    $tipoSelecionadoId = (string) old('tipo_ficha_catalografica_id', $ficha->tipo_ficha_catalografica_id ?? '');
+    $tipoSelecionado = $tipos_fichas_catalograficas->first(fn ($tipo) => (string) $tipo->id === $tipoSelecionadoId);
+    $tipoSelecionadoSlug = $tipoSelecionado?->slug ?? '';
+    $areaSelecionada = (string) old(
+        'area_conhecimento',
+        isset($ficha)
+            ? (\App\Enums\AreaConhecimento::fromCodigoCDD($ficha->area_conhecimento)?->value ?? $ficha->area_conhecimento ?? '')
+            : ''
+    );
+    $possuiAnexoExistente = isset($ficha) && !empty($ficha->anexo);
+    $produtosEducacionais = [
+        'acervo' => 'Acervo',
+        'ativos_propriedade' => 'Ativos de Propriedade (Ex: Patente, Marca e etc.)',
+        'base_dados' => 'Base de dados técnico-científica',
+        'carta' => 'Carta, mapa ou similar',
+        'cultivar' => 'Cultivar',
+        'curso_formacao' => 'Curso para Formação Profissional',
+        'empresa_social' => 'Empresa ou Organização Social Inovadora',
+        'evento' => 'Evento Organizado',
+        'manual' => 'Manual/Protocolo',
+        'material_didatico' => 'Material Didático',
+        'norma' => 'Norma ou Marco Regulatório',
+        'processo' => 'Processo / Tecnologia e Produto / Material não patenteáveis',
+        'produto_bibliografico' => 'Produto Bibliográfico',
+        'produto_comunicacao' => 'Produto de Comunicação',
+        'produto_editoracao' => 'Produto de Editoração',
+        'produto_sigilo' => 'Produtos/Processos em Sigilo',
+        'relatorio' => 'Relatório técnico conclusivo',
+        'software' => 'Software/Aplicativo (Programa de computador)',
+        'taxonomia' => 'Taxonomias, Ontologias e Tesauros',
+        'tecnologia_social' => 'Tecnologia Social',
+        'traducao' => 'Tradução',
+    ];
+    $produtoSelecionado = old('produto', $ficha->programaEducacional->produto ?? '');
+@endphp
+
 <!-- Dados do Trabalho -->
 <div class="col-md-12 corpoFicha shadow my-4">
     <div class="row">
@@ -23,21 +60,20 @@
                     <option
                         value=""
                         disabled
-                        @if (old('tipo_ficha_catalografica_id', '') == '') selected @endif
+                        @if ($tipoSelecionadoId === '') selected @endif
                     >
                         Selecione o tipo de ficha catalográfica
                     </option>
 
                     @foreach ($tipos_fichas_catalograficas as $tipo)
-                        @if (in_array((int) $tipo->id, [1, 2], true))
-                            <option
-                                value="{{ $tipo->id }}"
-                                data-tipo="{{ $tipo->nome }}"
-                                @if ((string) old('tipo_ficha_catalografica_id', $ficha->tipoFichaCatalografica->id ?? '') === (string) $tipo->id) selected @endif
-                            >
-                                {{ $tipo->nome }}
-                            </option>
-                        @endif
+                        <option
+                            value="{{ $tipo->id }}"
+                            data-tipo="{{ $tipo->nome }}"
+                            data-slug="{{ $tipo->slug }}"
+                            @if ($tipoSelecionadoId === (string) $tipo->id) selected @endif
+                        >
+                            {{ $tipo->nome }}
+                        </option>
                     @endforeach
                 </select>
 
@@ -134,73 +170,6 @@
             </div>
 
             <div class="form-group">
-                <label for="cutter">
-                    Cutter:
-                    <span style="color: red">*</span>
-                </label>
-
-                <input
-                    type="text"
-                    class="form-control @error('cutter') is-invalid @enderror"
-                    id="cutter"
-                    name="cutter"
-                    value="{{ old('cutter', $ficha->cutter ?? '') }}"
-                    placeholder="Digite o código de Cutter"
-                    required
-                >
-
-                @error('cutter')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label for="area_conhecimento">
-                    Área do Conhecimento:
-                    <span style="color: red">*</span>
-                </label>
-
-                <select
-                    class="form-control @error('area_conhecimento') is-invalid @enderror"
-                    id="area_conhecimento"
-                    name="area_conhecimento"
-                    required
-                >
-                    <option value="">Selecione a área do conhecimento</option>
-
-                    @foreach (\App\Enums\AreaConhecimento::cases() as $area)
-                        <option
-                            value="{{ $area->value }}"
-                            @if ((string) old('area_conhecimento', $ficha->area_conhecimento ?? '') === (string) $area->value) selected @endif
-                        >
-                            {{ $area->descricaoCompleta() }}
-                        </option>
-                    @endforeach
-                </select>
-
-                @error('area_conhecimento')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <a
-                    href="https://www.tabelacutter.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="btn btn-block"
-                    style="background-color: var(--biblioteca); border-radius: 0.5rem; color: white;"
-                >
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    Tabela Cutter
-                </a>
-            </div>
-
-            <div class="form-group">
                 <label for="local">
                     Local:
                     <span style="color: red">*</span>
@@ -289,6 +258,7 @@
                             class="form-control @error('ilustracao') is-invalid @enderror"
                             id="ilustracao"
                             name="ilustracao"
+                            required
                         >
                             <option
                                 value=""
@@ -403,7 +373,9 @@
             <div class="form-group">
                 <label for="anexo">
                     Anexar os elementos pré-textuais:
-                    <span style="color: red">*</span>
+                    @if (!$possuiAnexoExistente)
+                        <span style="color: red">*</span>
+                    @endif
                 </label>
 
                 <br>
@@ -415,7 +387,8 @@
                     name="anexo"
                     accept="application/pdf,.pdf"
                     style="margin-bottom: 0;"
-                    required
+                    data-has-existing="{{ $possuiAnexoExistente ? '1' : '0' }}"
+                    @if (!$possuiAnexoExistente) required @endif
                 >
 
                 <br>
@@ -424,7 +397,11 @@
                     id="tipoAnexo"
                     style="font-size: small; color: gray; margin-top: 0; margin-bottom: 10px;"
                 >
-                    Tipo permitido: PDF. Tamanho máximo: 10 MB.
+                    @if ($possuiAnexoExistente)
+                        Anexo atual salvo ({{ $ficha->anexo }}). Envie um novo PDF apenas se desejar substituí-lo (máximo: 10 MB).
+                    @else
+                        Tipo permitido: PDF. Tamanho máximo: 10 MB.
+                    @endif
                 </span>
 
                 @error('anexo')
@@ -579,7 +556,7 @@
         <!-- Monografia -->
         <div
             id="campos-monografia"
-            class="col-md-12 campos-documento form-group {{ (string) old('tipo_ficha_catalografica_id', $ficha->tipo_ficha_catalografica_id ?? '') === '2' ? '' : 'd-none' }}"
+            class="col-md-12 campos-documento form-group {{ $tipoSelecionadoSlug === 'monografia' ? '' : 'd-none' }}"
         >
             <label for="tipo_curso" class="form-label">
                 Selecione o Tipo do seu Curso:
@@ -592,7 +569,7 @@
                 name="tipo_curso"
                 id="tipo_curso"
                 required
-                @if ((string) old('tipo_ficha_catalografica_id', $ficha->tipo_ficha_catalografica_id ?? '') !== '2') disabled @endif
+                @if ($tipoSelecionadoSlug !== 'monografia') disabled @endif
             >
                 <option value="" disabled @if (empty(old('tipo_curso', $ficha->monografia->tipo_curso ?? ''))) selected @endif>
                     Selecione o tipo do curso
@@ -629,9 +606,9 @@
         <!-- Dissertação -->
         <div
             id="campos-dissertacao"
-            class="col-md-12 campos-documento form-group {{ (string) old('tipo_ficha_catalografica_id', $ficha->tipo_ficha_catalografica_id ?? '') === '1' ? '' : 'd-none' }}"
+            class="col-md-12 campos-documento form-group {{ $tipoSelecionadoSlug === 'dissertacao' ? '' : 'd-none' }}"
         >
-            <label for="programa" class="form-label">
+            <label for="programa_dissertacao" class="form-label">
                 Nome do Programa de Pós-Graduação:
                 <span style="color: red">*</span>
             </label>
@@ -639,12 +616,12 @@
             <input
                 type="text"
                 class="form-control @error('programa') is-invalid @enderror"
-                id="programa"
+                id="programa_dissertacao"
                 name="programa"
                 placeholder="Digite o Nome do Programa"
                 value="{{ old('programa', $ficha->dissertacao->programa ?? '') }}"
                 required
-                @if ((string) old('tipo_ficha_catalografica_id', $ficha->tipo_ficha_catalografica_id ?? '') !== '1') disabled @endif
+                @if ($tipoSelecionadoSlug !== 'dissertacao') disabled @endif
             >
 
             @error('programa')
@@ -652,6 +629,184 @@
                     <strong>{{ $message }}</strong>
                 </span>
             @enderror
+        </div>
+
+        <!-- Tese -->
+        <div
+            id="campos-tese"
+            class="col-md-12 campos-documento form-group {{ $tipoSelecionadoSlug === 'tese' ? '' : 'd-none' }}"
+        >
+            <label for="programa_tese" class="form-label">
+                Nome do Programa de Pós-Graduação:
+                <span style="color: red">*</span>
+            </label>
+
+            <input
+                type="text"
+                class="form-control @error('programa') is-invalid @enderror"
+                id="programa_tese"
+                name="programa"
+                placeholder="Digite o Nome do Programa"
+                value="{{ old('programa', $ficha->tese->programa ?? '') }}"
+                required
+                @if ($tipoSelecionadoSlug !== 'tese') disabled @endif
+            >
+
+            @error('programa')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
+
+        <!-- Produto Educacional -->
+        <div
+            id="campos-produto-educacional"
+            class="col-md-12 campos-documento {{ in_array($tipoSelecionadoSlug, ['produto-educacional', 'programa_educacional'], true) ? '' : 'd-none' }}"
+        >
+            <div class="form-group">
+                <label for="programa_produto_educacional" class="form-label">
+                    Nome do Programa de Pós-Graduação:
+                    <span style="color: red">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    class="form-control @error('programa') is-invalid @enderror"
+                    id="programa_produto_educacional"
+                    name="programa"
+                    placeholder="Digite o Nome do Programa"
+                    value="{{ old('programa', $ficha->programaEducacional->programa ?? '') }}"
+                    required
+                    @if (!in_array($tipoSelecionadoSlug, ['produto-educacional', 'programa_educacional'], true)) disabled @endif
+                >
+
+                @error('programa')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="produto" class="form-label">
+                    Selecione o Tipo do Produto:
+                    <span style="color: red">*</span>
+                </label>
+
+                <select
+                    class="form-control @error('produto') is-invalid @enderror"
+                    aria-label="Selecione o tipo do produto"
+                    name="produto"
+                    id="produto"
+                    required
+                    @if (!in_array($tipoSelecionadoSlug, ['produto-educacional', 'programa_educacional'], true)) disabled @endif
+                >
+                    <option value="" disabled @if (empty($produtoSelecionado)) selected @endif>
+                        Selecione o tipo do produto
+                    </option>
+                    @foreach ($produtosEducacionais as $valorProduto => $labelProduto)
+                        <option
+                            value="{{ $valorProduto }}"
+                            @if ($produtoSelecionado === $valorProduto) selected @endif
+                        >
+                            {{ $labelProduto }}
+                        </option>
+                    @endforeach
+                </select>
+
+                @error('produto')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Identificação Catalográfica (Código de Cutter → Área do Conhecimento) -->
+<div class="col-md-12 corpoFicha shadow my-4">
+    <div class="row">
+        <div class="col-md-12 cabecalho py-2">
+            <span class="tituloCabecalho">Identificação Catalográfica</span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 py-2 textoFicha">
+            <div class="form-group">
+                <label for="cutter" class="form-label">
+                    Código de Cutter:
+                    <span style="color: red">*</span>
+                </label>
+
+                <div class="input-group">
+                    <input
+                        type="text"
+                        class="form-control @error('cutter') is-invalid @enderror"
+                        id="cutter"
+                        name="cutter"
+                        value="{{ old('cutter', $ficha->cutter ?? '') }}"
+                        placeholder="Digite o código de Cutter (ex.: S586)"
+                        required
+                    >
+
+                    <a
+                        href="https://www.tabelacutter.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="btn"
+                        style="background-color: var(--biblioteca); color: white;"
+                    >
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        Tabela Cutter
+                    </a>
+
+                    @error('cutter')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
+                </div>
+
+                <small class="form-text text-muted">
+                    Consulte o código do seu sobrenome na Tabela Cutter.
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="area_conhecimento" class="form-label">
+                    Área do Conhecimento:
+                    <span style="color: red">*</span>
+                </label>
+
+                <select
+                    class="form-control @error('area_conhecimento') is-invalid @enderror"
+                    id="area_conhecimento"
+                    name="area_conhecimento"
+                    required
+                >
+                    <option value="" @if ($areaSelecionada === '') selected @endif>
+                        Selecione a área do conhecimento
+                    </option>
+
+                    @foreach (\App\Enums\AreaConhecimento::cases() as $area)
+                        <option
+                            value="{{ $area->value }}"
+                            @if ($areaSelecionada === (string) $area->value) selected @endif
+                        >
+                            {{ $area->descricaoCompleta() }}
+                        </option>
+                    @endforeach
+                </select>
+
+                @error('area_conhecimento')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
         </div>
     </div>
 </div>
@@ -784,7 +939,7 @@
             id="checkBoxConfirma"
             name="checkBoxConfirma"
             value="1"
-            @if (old('checkBoxConfirma')) checked @endif
+            @if (old('checkBoxConfirma') || isset($ficha)) checked @endif
             onchange="verificaCheckBoxConfirma()"
         >
     </div>
@@ -822,12 +977,17 @@
                 .find('input, select, textarea')
                 .prop('disabled', true);
 
+            const slug = $('#tipo_ficha_catalografica_id option:selected').data('slug');
+
             const blocos = {
-                '1': '#campos-dissertacao',
-                '2': '#campos-monografia'
+                'dissertacao': '#campos-dissertacao',
+                'monografia': '#campos-monografia',
+                'tese': '#campos-tese',
+                'produto-educacional': '#campos-produto-educacional',
+                'programa_educacional': '#campos-produto-educacional'
             };
 
-            const bloco = blocos[$('#tipo_ficha_catalografica_id').val()];
+            const bloco = blocos[slug];
 
             if (bloco) {
                 $(bloco)
@@ -840,12 +1000,13 @@
         function validarAnexo(exibirAlerta) {
             const input = document.getElementById('anexo');
             const arquivo = input.files[0];
+            const possuiAnexoExistente = input.dataset.hasExisting === '1';
 
             input.setCustomValidity('');
 
             if (!arquivo) {
                 $('#tipoAnexo').css('color', 'gray');
-                return false;
+                return possuiAnexoExistente;
             }
 
             const extensao = arquivo.name.split('.').pop().toLowerCase();

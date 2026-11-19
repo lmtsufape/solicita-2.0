@@ -59,15 +59,17 @@
 
                                     @php
                                         $tipo = $ficha->tipoFichaCatalografica?->slug ?? '-';
+                                        $badgeClass = match ($tipo) {
+                                            'monografia' => 'bg-primary-subtle text-primary',
+                                            'dissertacao' => 'bg-info-subtle text-info-emphasis',
+                                            'tese' => 'bg-warning-subtle text-warning-emphasis',
+                                            'produto-educacional', 'programa_educacional' => 'bg-success-subtle text-success-emphasis',
+                                            default => 'bg-secondary-subtle text-secondary',
+                                        };
                                     @endphp
 
                                     <span
-                                        class="badge rounded-pill px-3 py-2
-                                        {{
-                                            $tipo === 'monografia'
-                                                ? 'bg-primary-subtle text-primary'
-                                                : 'bg-info-subtle text-info-emphasis'
-                                        }}"
+                                        class="badge rounded-pill px-3 py-2 {{ $badgeClass }}"
                                     >
                                         {{ $ficha->tipoFichaCatalografica?->nome ?? '-' }}
                                     </span>
@@ -179,6 +181,13 @@
         </div>
 
     @endif
+
+    <div class="mt-4">
+        <a class="btn" href="{{ route('prepara-requisicao-bibli') }}"
+            style="background-color: var(--padrao); border-radius: 0.5rem; color: white;">
+            Voltar
+        </a>
+    </div>
 
 </div>
 

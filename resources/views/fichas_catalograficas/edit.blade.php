@@ -21,7 +21,7 @@
             <div class="col-md-4">
                 <a type="button" class="btn btn-block"
                     style="background-color: var(--padrao); border-radius: 0.5rem; color: white;"
-                    href="{{ route('prepara-requisicao-bibli') }}">Voltar</a>
+                    href="{{ Auth::user()->tipo === 'bibliotecario' ? route('listar-fichas') : route('fichas.index') }}">Voltar</a>
             </div>
             <div class="col-md-4 text-right">
                 <button type="submit" class="btn btn-block" id="botaoEnviar"
